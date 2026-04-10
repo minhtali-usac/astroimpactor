@@ -1,0 +1,10 @@
+{
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/src/index.html", "destination": "/index.html" },
+    { "source": "/test/globe.html", "destination": "/globe.html" },
+    { "source": "/Defense/earth.html", "destination": "/earth.html" }
+  ]
+}
