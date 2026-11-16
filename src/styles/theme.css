@@ -93,7 +93,7 @@ a { color: var(--brand-hi); text-underline-offset: 2px; }
 /* ---------- Câu hỏi dẫn dắt trên sân khấu mô phỏng ------------------- */
 .stage-q { position: fixed; z-index: 25; top: calc(var(--topbar-h) + 12px); left: 50%; transform: translateX(-50%); max-width: min(520px, calc(100vw - 760px)); display: flex; flex-direction: column; gap: 1px; padding: 8px 14px; border-radius: 10px; background: rgba(4, 5, 9, 0.66); border: 1px solid var(--line); backdrop-filter: blur(6px); pointer-events: none; text-align: center; }
 .stage-q-k { font: 700 10.5px var(--f-display); letter-spacing: 0.16em; text-transform: uppercase; color: var(--fire); }
-.stage-q-t { font: 600 15px/1.35 var(--f-display); letter-spacing: 0.01em; }
+.stage-q-t { font: 600 15px/1.35 var(--f-display); letter-spacing: 0.01em; white-space: nowrap; }
 
 /* ---------- Bảng điều khiển -------------------------------------------- */
 .panel { position: fixed; z-index: 30; display: flex; flex-direction: column; overflow: hidden; background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }

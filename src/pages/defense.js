@@ -20,10 +20,11 @@ import { geodesicRing } from '../lib/geo.js';
 import { COMPOSITIONS } from '../lib/places.js';
 import { createEarthGlobe, isLand, landReady } from '../lib/globe.js';
 import * as fmt from '../lib/format.js';
+import { initBuddy } from '../mascot/buddy.js';
 import { mountTopbar, initTooltips, initRanges, paintRange, initCollapsibles, initModals, openModal, closeModal, toast, loader as makeLoader } from '../lib/ui.js';
 
 mountTopbar('defense', '', {
-  question: 'Một lực đẩy rất nhỏ có đủ khiến tiểu hành tinh đi chệch khỏi Trái Đất?',
+  question: 'Lực đẩy nhỏ có cứu được Trái Đất?',
   help: `<ul class="about-list">
   <li><span>①</span><div><b>Thiết lập:</b> chọn độ khó hoặc tự chỉnh tiểu hành tinh, thời gian cảnh báo và phương tiện. Bảng "Phân tích trước nhiệm vụ" cho biết nhiệm vụ có khả thi.</div></li>
   <li><span>🚀</span><div><b>Tàu va chạm</b> (<kbd>R</kbd>): đẩy tiểu hành tinh bằng động lượng, kiểu DART. Phóng càng sớm, độ lệch càng lớn.</div></li>
@@ -228,6 +229,7 @@ function newGame() {
     traj: null, trajDirty: true, trajTimer: 0, satTh: Math.random() * Math.PI * 2, endT: 0,
   };
   recomputeTrajectory();
+  if (dog && !dog.muted) setTimeout(() => dog.say(`Còn ${leadText(s.T / DAY)}! Phóng tàu ngay — càng sớm càng hiệu quả.`, 'think'), 1800);
   asteroid.visible = true;
   const size = R * 0.03 * THREE.MathUtils.clamp(Math.log10(s.D) / 2.2, 0.6, 1.6);
   rock.scale.setScalar(size); astGlow.scale.setScalar(size * 6);
@@ -324,6 +326,10 @@ function updateRockets(dt) {
       const tRem = tRemaining();
       const shift = applyDv(dv, tRem);
       burst(asteroid.position, 0xffc070);
+      if (dog && !dog.muted && g.flights.length === 0) {
+        const lbl = $('astLabel').getBoundingClientRect();
+        dog.visit(lbl.left, lbl.top + 80, { say: shift > 500 ? `Trúng! Lệch thêm ${fmt.num(shift)} km.` : `Trúng, nhưng chỉ lệch ${fmt.num(shift)} km — phóng sớm hơn nhé!`, mood: shift > 500 ? 'hop' : 'think', stay: 3500 });
+      }
       toast('💥 Va chạm trúng đích!', `Δv = ${fmt.sig(dv * 1000)} mm/s · còn ${leadText(tRem / DAY)} ⇒ lệch ${fmt.num(shift)} km`, 'ok', 3200);
       renderRockets();
     }
@@ -357,7 +363,7 @@ function updateLaser(dt, dtGame) {
   let on = false, state = 'Sẵn sàng';
   if (g.overheated) { state = '🔥 Quá nhiệt — đang làm mát…'; if (g.heat < 30) g.overheated = false; }
   else if (wants) {
-    if (blocked(sat.position, asteroid.position)) state = '🌍 Trái Đất che khuất — chờ vệ tinh quay tới';
+    if (blocked(sat.position, asteroid.position)) { state = '🌍 Trái Đất che khuất — chờ vệ tinh quay tới'; if (!g.saidBlocked) { g.saidBlocked = true; dog?.say('Trái Đất đang che — chờ vệ tinh quay ra rồi bắn!', 'think'); } }
     else { on = true; state = `🔆 Đang bóc tách — hiệu suất ${fmt.sig(laserEfficiency(g.s.vInf * tRemaining()) * 100)}%`; }
   }
   if (!g.s.P) state = 'Không trang bị laser';
@@ -493,8 +499,10 @@ function finish() {
     world.pointOfView({ lat: ll.lat, lng: ll.lng, altitude: 1.6 }, 1500);
     const url = `./impact.html?d=${g.s.D}&rho=${g.s.rho}&v=${fmt.num(vSurf, 1).replace(',', '.')}&angle=${Math.round(angle)}&lat=${ll.lat.toFixed(3)}&lng=${ll.lng.toFixed(3)}&name=${encodeURIComponent('Phòng thủ thất bại')}`;
     setTimeout(() => endModal(false, { fx, ll, angle, url }), 1600);
+    dog?.sad('Ôi không… Thử lại và phóng tàu sớm hơn nhé!');
   } else {
     setTimeout(() => endModal(true, {}), 2500);
+    setTimeout(() => dog?.celebrate('Gâu gâu! Trái Đất an toàn rồi!', innerWidth / 2, innerHeight / 2), 600);
   }
 }
 
@@ -539,7 +547,7 @@ function toSetup() {
   asteroid.visible = false; $('astLabel').classList.add('hidden');
   pathGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(0), 3));
   $('setup').classList.remove('hidden'); $('hud').classList.add('hidden');
-  $('leftTitle').innerHTML = `Thiết lập nhiệm vụ<span class="sub">Làm lệch hướng tiểu hành tinh trước khi quá muộn</span>`;
+  $('leftTitle').innerHTML = `Thiết lập nhiệm vụ<span class="sub">Đẩy lệch tiểu hành tinh kịp thời</span>`;
   $('physics').innerHTML = '<div class="muted">Bắt đầu nhiệm vụ để xem các đại lượng vật lý thay đổi theo thời gian.</div>';
   drawBPlane();
 }
@@ -595,6 +603,7 @@ function loop(now) {
 //  Điều khiển
 // ---------------------------------------------------------------------------
 let scenarioName = '';
+let dog = null;
 $('start').addEventListener('click', () => newGame());
 $('fireRocket').addEventListener('click', fireRocket);
 const laserBtn = $('fireLaser');
@@ -650,5 +659,13 @@ addEventListener('keyup', e => { if (e.code === 'Space') setFiring(false); });
   sat.add(satGlow);
   if (rocketG.status === 'fulfilled') rocketPrefab = fitModel(rocketG.value.scene, R * 0.06, true);
   load.done();
+  dog = initBuddy('defense', { explain: () => {
+    const g = game;
+    if (g.phase !== 'run' && g.phase !== 'ending') return 'Chọn độ khó rồi bấm “Bắt đầu nhiệm vụ”.';
+    const t = tRemaining(), need = Math.max(0, g.bSafe - g.b.length());
+    return need > 0
+      ? `Còn thiếu ${fmt.num(need)} km để ra khỏi vòng đỏ.`
+      : `Đã an toàn: bay sượt ở độ cao ${fmt.num(g.traj.rMin - R_EARTH)} km.`;
+  } });
   if (innerWidth < 900) $('rightPanel').classList.add('m-hide');
 })();

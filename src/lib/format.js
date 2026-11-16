@@ -37,6 +37,7 @@ export function energy(mt) {
   if (mt < 1e-3) return `${sig(mt * 1e6)} tấn TNT`;
   if (mt < 1) return `${sig(mt * 1e3)} kiloton TNT`;
   if (mt < 1e3) return `${sig(mt)} megaton TNT`;
+  if (mt >= 1e7) return `${sig(mt)} megaton TNT`;
   return `${sig(mt / 1e3)} gigaton TNT`;
 }
 

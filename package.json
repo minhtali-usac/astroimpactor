@@ -8,9 +8,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "data": "node scripts/build-neo-data.mjs",
-    "test": "node --test tests/physics.test.mjs"
+    "test": "node --test tests/physics.test.mjs",
+    "uat": "node tests/uat.mjs"
   },
   "devDependencies": {
+    "puppeteer-core": "^25.17.0",
     "vite": "^4.5.0"
   },
   "dependencies": {

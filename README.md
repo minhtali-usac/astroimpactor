@@ -43,6 +43,7 @@ Thông qua hai vai trò đối lập, người chơi tiếp cận bài toán va 
 | ☄️ **Destroyer** | Chọn đường kính, thành phần, vận tốc, góc và vị trí; xem năng lượng, độ cao vỡ vụn / nổ trên không, hố va chạm, quả cầu lửa, bỏng nhiệt, sóng xung kích, động đất, sóng thần. Các vùng ảnh hưởng vẽ **đúng bán kính thật** trên quả địa cầu, kèm số dân đô thị và thành phố trong vùng. 8 sự kiện lịch sử dựng sẵn (Chelyabinsk, Tunguska, Hố Meteor, Chicxulub…). |
 | 🛡️ **Defender** | Tàu va chạm động năng kiểu DART và laser bóc tách bề mặt; quỹ đạo bay sượt tích phân số dưới lực hấp dẫn Trái Đất; sơ đồ **mặt phẳng B** cho thấy điểm xuyên của tiểu hành tinh và vùng bắt giữ do hội tụ hấp dẫn. Bảng phân tích trước nhiệm vụ cho biết kịch bản có khả thi. |
 | 🔗 **Kết nối ba phần** | Chọn một tiểu hành tinh thật rồi bấm “Nếu va chạm?” hoặc “Làm lệch hướng” để mở Destroyer / Defender với đúng kích thước và vận tốc của nó. Thất bại ở Defender sẽ dẫn sang Destroyer tại đúng điểm rơi. |
+| 🐶 **Chó phi hành gia** | Linh vật 3D đi cùng người học (cùng họ với Sên phi hành gia của Aurora-LAB): gợi ý bước tiếp theo, giải thích điều đang thấy, kiểm tra nhanh 3 câu, bài khái niệm ngắn; chạy tới chỗ vừa có sự kiện, mừng khi bạn bảo vệ được Trái Đất. Có thể tắt lời nhắc. |
 | 🇻🇳 **Quả địa cầu Việt Nam** | Luôn hiển thị **Quần đảo Hoàng Sa** (TP. Đà Nẵng) và **Quần đảo Trường Sa** (tỉnh Khánh Hoà) thuộc chủ quyền Việt Nam, cùng các đảo tiêu biểu. Ngày/đêm theo vị trí Mặt Trời thực. |
 | 📐 **Minh bạch khoa học** | Mỗi con số có công thức và nguồn; hộp “Phương pháp & công thức” nêu rõ giới hạn của mô hình. 14 bài kiểm thử tự động đối chiếu với sự kiện thật. |
 | 📱 **Mọi thiết bị** | Giao diện co giãn cho máy tính và điện thoại; phím tắt `/` `Space` `←` `→` `H` `R` `P` `?`. |
@@ -80,6 +81,7 @@ Mô hình bỏ qua địa hình, thời tiết, hướng bay (trừ góc) và qu
 npm ci
 npm run dev      # mở http://localhost:5173
 npm test         # 14 bài kiểm thử vật lý
+npm run uat      # 48 bước kiểm thử trên trình duyệt (cần npm run dev đang chạy, Edge hoặc Chrome)
 npm run build    # xuất bản tĩnh vào dist/
 ```
 
@@ -99,7 +101,8 @@ src/lib/      orbit.js        cơ học Kepler, lịch hành tinh, phân loại 
               globe.js        quả địa cầu dùng chung · ui.js · about.js · format.js · places.js
 src/styles/   theme.css (hệ nhận diện USAC) + CSS từng phần
 public/       data/ (NEO nhị phân, rủi ro, dân số) · models/ · og-logo.png · CNAME
-tests/        kiểm thử vật lý
+tests/        kiểm thử vật lý · kiểm thử trình duyệt (uat.mjs)
+src/mascot/   Chó phi hành gia: dog3d.js (mô hình 3D) · buddy.js (người đồng hành) · lines.js (lời thoại, câu hỏi)
 scripts/      build-neo-data.mjs
 ```
 

@@ -23,6 +23,7 @@ import {
   NEO_CLASSES, classifyNEO, albedoFromSlope, diameterFromH, periodYears,
 } from '../lib/orbit.js';
 import * as fmt from '../lib/format.js';
+import { initBuddy } from '../mascot/buddy.js';
 import { mountTopbar, initModals, initTooltips, initRanges, paintRange, initCollapsibles, loader as makeLoader, fetchWithProgress, toast } from '../lib/ui.js';
 
 import bg1 from '../images/1.jpg';
@@ -34,8 +35,8 @@ import mercuryTex from '../images/mercurymap.jpg';
 import mercuryBump from '../images/mercurybump.jpg';
 import venusTex from '../images/venusmap.jpg';
 import venusAtmo from '../images/venus_atmosphere.jpg';
-import earthDay from '../images/earth_daymap.jpg';
-import earthNight from '../images/earth_nightmap.jpg';
+import earthDay from '../images/earth_day_4k.jpg';
+import earthNight from '../images/earth_night_4k.jpg';
 import earthSpec from '../images/earth_specularmap.jpg';
 import earthClouds from '../images/earth_atmosphere.jpg';
 import moonTex from '../images/moonmap.jpg';
@@ -56,7 +57,7 @@ import plutoTex from '../images/plutomap.jpg';
 import plutoBump from '../images/plutobump2k.jpg';
 
 mountTopbar('solar', `<button type="button" class="hbtn" id="homeBtn" title="Về toàn cảnh (H)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="lbl">Toàn cảnh</span></button>`, {
-  question: 'Thiên thể nào được xem là gần Trái Đất, và vì sao một số cần được theo dõi đặc biệt?',
+  question: 'Vì sao một số tiểu hành tinh cần được theo dõi?',
   help: `<ul class="about-list">
   <li><span>🖱</span><div><b>Xoay · thu phóng:</b> kéo chuột để xoay, cuộn để phóng to; nhấp vào hành tinh hoặc một chấm sáng (tiểu hành tinh) để xem chi tiết và bay tới đó.</div></li>
   <li><span>🔎</span><div><b>Tìm kiếm:</b> gõ tên hoặc ký hiệu (Apophis, Bennu, 2024 YR4…) — phím <kbd>/</kbd>.</div></li>
@@ -119,7 +120,36 @@ const tex = (url, srgb = true) => {
 const cube = new THREE.CubeTextureLoader().load([bg3, bg1, bg2, bg2, bg4, bg2]);
 cube.colorSpace = THREE.SRGBColorSpace;
 scene.background = cube;
-scene.backgroundIntensity = 0.55;
+scene.backgroundIntensity = 0.28; // ảnh nền 1024 px chỉ làm lớp tinh vân mờ phía sau
+
+// Trường sao vẽ bằng điểm ảnh: sắc nét ở mọi độ phân giải màn hình (thay cho ảnh nền bị nhoè)
+const stars = (() => {
+  const N = 9000, pos = new Float32Array(N * 3), col = new Float32Array(N * 3), size = new Float32Array(N);
+  const c = new THREE.Color();
+  for (let i = 0; i < N; i++) {
+    const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2, r = Math.sqrt(1 - u * u);
+    // dày hơn quanh một dải nghiêng (gợi Ngân Hà)
+    const band = Math.random() < 0.45 ? 0.25 : 1;
+    pos.set([r * Math.cos(th), u * band, r * Math.sin(th)].map(v => v * 20000), i * 3);
+    const mag = Math.pow(Math.random(), 3.2);
+    c.setHSL(0.55 + (Math.random() - 0.5) * 0.25, 0.35 + Math.random() * 0.3, 0.6 + 0.4 * mag).toArray(col, i * 3);
+    size[i] = 0.8 + mag * 2.6;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aColor', new THREE.BufferAttribute(col, 3));
+  g.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
+  const m = new THREE.ShaderMaterial({
+    uniforms: { uPixel: { value: renderer.getPixelRatio() } },
+    vertexShader: `attribute vec3 aColor; attribute float aSize; uniform float uPixel; varying vec3 vC;
+      void main(){ vC = aColor; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_PointSize = aSize * uPixel; }`,
+    fragmentShader: `varying vec3 vC; void main(){ float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard; gl_FragColor = vec4(vC, smoothstep(0.5, 0.1, d)); }`,
+    transparent: true, depthWrite: false,
+  });
+  const pts = new THREE.Points(g, m); pts.frustumCulled = false; pts.renderOrder = -1;
+  scene.add(pts);
+  return pts;
+})();
 
 scene.add(new THREE.AmbientLight(0xffffff, 0.12));
 const sunLight = new THREE.PointLight(0xfff4e0, 2.6, 0, 0); // decay 0: chiếu sáng đều mọi khoảng cách
@@ -200,7 +230,7 @@ function makeEarthMaterial() {
         vec3 col = mix(night, day, dayMix);
         float spec = texture2D(specMap, vUv).r;                 // phản xạ đại dương
         vec3 h = normalize(vSun + normalize(vView));
-        col += spec * pow(max(dot(n, h), 0.0), 48.0) * 0.6 * dayMix;
+        col += spec * pow(max(dot(n, h), 0.0), 64.0) * 0.28 * dayMix;
         float rim = pow(1.0 - max(dot(n, normalize(vView)), 0.0), 3.0);
         col += vec3(0.25, 0.55, 1.0) * rim * 0.6 * (0.25 + dayMix);
         gl_FragColor = vec4(col, 1.0);
@@ -425,7 +455,7 @@ async function loadNEO() {
     NEO.cls[k] = classifyNEO(a, e);
     NEO.E[k] = NaN;
   }
-  NEO.search = names.map((nm, k) => ({ k, key: nm.toLowerCase().replace(/\s+/g, ''), label: FAMOUS[nm] || NEO.risk[k]?.name || null }));
+  NEO.search = names.map((nm, k) => { const lb = FAMOUS[nm] || NEO.risk[k]?.name; return { k, key: nm.toLowerCase().replace(/\s+/g, ''), label: lb != null ? String(lb) : null }; });
 
   const g = neoPoints.geometry;
   g.setAttribute('position', new THREE.BufferAttribute(NEO.pos, 3).setUsage(THREE.DynamicDrawUsage));
@@ -609,6 +639,7 @@ function select(sel, { fly: doFly = true } = {}) {
     selMarker.visible = true;
     selLabel.element.textContent = neoTitle(k);
     if (doFly) flyTo(sel, 40);
+    dogReactNEO(sel.k);
     liveTimer = 1; // cập nhật số liệu trực tiếp ngay khung kế tiếp
   } else {
     selMarker.visible = false;
@@ -625,8 +656,36 @@ function select(sel, { fly: doFly = true } = {}) {
 // ---------------------------------------------------------------------------
 //  Bảng chi tiết
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+//  Chó phi hành gia
+// ---------------------------------------------------------------------------
+let dog = null;
+const screenOf = v => { const p = v.clone().project(camera); return [(p.x * 0.5 + 0.5) * innerWidth, (-p.y * 0.5 + 0.5) * innerHeight, p.z < 1]; };
+function dogReactNEO(k) {
+  if (!dog || dog.muted) return;
+  const r = NEO.risk[k], cls = NEO_CLASSES[NEO.cls[k]];
+  const line = r
+    ? `${neoTitle(k)}: xác suất va chạm ${r.ipMax ? '1/' + fmt.num(1 / r.ipMax) : 'rất nhỏ'}, Palermo ${fmt.num(r.psMax, 2)}.`
+    : `${neoTitle(k)}: nhóm ${cls.name}, rộng khoảng ${fmt.dist(NEO.D[k])}.`;
+  setTimeout(() => {
+    const [x, y, ok] = screenOf(new THREE.Vector3().fromArray(NEO.pos, k * 3));
+    if (ok) dog.visit(x, y + 90, { say: line, mood: r && r.psMax > -3 ? 'think' : 'hop', stay: 5200 });
+    else dog.say(line, 'think');
+  }, 1500);
+}
+function dogExplain() {
+  if (selected?.kind === 'neo') {
+    const k = selected.k, p = new THREE.Vector3().fromArray(NEO.pos, k * 3);
+    const rS = p.length() / AU, v = Math.sqrt(GM_SUN * (2 / (rS * AU_KM) - 1 / (NEO.a[k] * AU_KM)));
+    return `Cách Mặt Trời ${fmt.num(rS, 2)} AU, bay ${fmt.num(v, 1)} km/s — càng gần Mặt Trời càng nhanh.`;
+  }
+  if (selected?.kind === 'planet') return `${planetByKey[selected.key].vn}: ${planetByKey[selected.key].desc}`;
+  const r = rateNow();
+  return `Mỗi chấm là vị trí thật của một tiểu hành tinh vào ngày ${fmt.dateVN(mjdToDate(time.mjd))}.`;
+}
+
 const neoTitle = k => {
-  const nm = NEO.names[k], alias = FAMOUS[nm] || NEO.risk[k]?.name;
+  const nm = NEO.names[k], alias = FAMOUS[nm] || (NEO.risk[k]?.name != null ? String(NEO.risk[k].name) : null);
   return alias && alias !== nm ? `${alias} (${nm})` : nm;
 };
 const kmFromScene = u => (u / AU) * AU_KM;
@@ -647,7 +706,7 @@ function renderDetails() {
     const k = selected.k, cls = NEO_CLASSES[NEO.cls[k]], r = NEO.risk[k];
     const a = NEO.a[k], e = NEO.e[k], q = a * (1 - e), Q = a * (1 + e);
     dot.style.background = cls.color;
-    title.innerHTML = `${fmt.escapeHtml(neoTitle(k))}<span class="sub">Tiểu hành tinh gần Trái Đất · nhóm ${cls.name}</span>`;
+    title.innerHTML = `${fmt.escapeHtml(neoTitle(k))}<span class="sub">Nhóm ${cls.name}</span>`;
     const p = new THREE.Vector3().fromArray(NEO.pos, k * 3);
     const rSun = p.length() / AU, dEarth = p.distanceTo(earthPos) / AU;
     const vHelio = Math.sqrt(GM_SUN * (2 / (rSun * AU_KM) - 1 / (a * AU_KM)));
@@ -734,8 +793,7 @@ function renderDetails() {
     dot.style.background = '#ffd15c';
     title.innerHTML = `Mặt Trời<span class="sub">Ngôi sao loại G2V</span>`;
     body.innerHTML = `<div class="section"><p class="d-desc">Chiếm 99,86% khối lượng Hệ Mặt Trời. Lực hấp dẫn của nó (GM = 1,327×10¹¹ km³/s²) chi phối quỹ đạo của mọi hành tinh và tiểu hành tinh trong mô phỏng này.</p>
-      <dl class="kv"><dt>Bán kính</dt><dd>696.000 km</dd><dt>Nhiệt độ bề mặt</dt><dd>≈ 5.772 K</dd><dt>Tuổi</dt><dd>≈ 4,6 tỷ năm</dd></dl>
-      <div class="field-hint" style="margin-top:8px">Kích thước hiển thị đã được thu nhỏ để không che quỹ đạo Sao Thủy.</div></div>`;
+      <dl class="kv"><dt>Bán kính</dt><dd>696.000 km</dd><dt>Nhiệt độ bề mặt</dt><dd>≈ 5.772 K</dd><dt>Tuổi</dt><dd>≈ 4,6 tỷ năm</dd></dl></div>`;
   }
   document.getElementById('dFollow')?.addEventListener('click', () => {
     if (follow) { follow = null; fly = null; } else flyTo(selected, camera.position.distanceTo(controls.target));
@@ -908,7 +966,7 @@ function renderClassFilters() {
 
 function renderLegend() {
   const el = document.getElementById('colorLegend');
-  if (filters.colorMode === 'class') el.innerHTML = '<div class="field-hint" style="margin:0">Màu theo nhóm quỹ đạo ở trên.</div>';
+  if (filters.colorMode === 'class') el.innerHTML = '';
   else if (filters.colorMode === 'size') el.innerHTML = `
     <div style="height:8px;border-radius:4px;background:linear-gradient(90deg,${SIZE_RAMP.map(s => s[1]).join(',')})"></div>
     <div class="row mono" style="font-size:11px;color:var(--muted)"><span>10 m</span><span style="text-align:center">100 m</span><span style="text-align:center">1 km</span><span style="text-align:right">10 km</span></div>`;
@@ -1030,6 +1088,7 @@ function frame() {
     lastTarget.copy(tp);
   }
   controls.update();
+  stars.position.copy(camera.position); // bầu trời sao luôn ở vô cực
 
   if (selected?.kind === 'neo') selMarker.position.fromArray(NEO.pos, selected.k * 3);
   updateLive(dt);
@@ -1067,6 +1126,7 @@ addEventListener('resize', () => {
     updateNEO(time.mjd);
     load.set(1, 'Sẵn sàng');
     load.done();
+    dog = initBuddy('solar', { explain: dogExplain });
     // Hỗ trợ liên kết sâu: ?neo=99942
     const q = new URLSearchParams(location.search).get('neo');
     if (q) { const k = NEO.names.indexOf(q); if (k >= 0) select({ kind: 'neo', k }); }

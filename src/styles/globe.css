@@ -49,3 +49,7 @@
 .globe-far .g-arch .flag { width: 12px; height: 8px; }
 .globe-far .g-arch .flag::after { font-size: 6px; line-height: 8px; }
 .globe-far .g-city:not(.vn) { opacity: 0 !important; }
+
+/* Khi đã vẽ vùng ảnh hưởng: ẩn bớt nhãn để bản đồ gọn */
+.zones-on .g-event .tag, .zones-on .g-city:not(.vn) { opacity: 0 !important; }
+.g-event:hover .tag { opacity: 1 !important; }

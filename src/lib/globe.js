@@ -9,8 +9,8 @@ import Globe from 'globe.gl';
 import { feature as topoFeature, merge as topoMerge } from 'topojson-client';
 import { subsolarPoint, pointInMultiPolygon, VIETNAM_ARCHIPELAGOS, VIETNAM_ISLANDS } from './geo.js';
 import { CITIES } from './places.js';
-import earthDay from '../images/earth_daymap.jpg';
-import earthNight from '../images/earth_nightmap.jpg';
+import earthDay from '../images/earth_day_4k.jpg';
+import earthNight from '../images/earth_night_4k.jpg';
 import earthSpec from '../images/earth_specularmap.jpg';
 
 // --- Mặt nạ lục địa (Natural Earth 1:50m, tải lười để trang mở nhanh) -------

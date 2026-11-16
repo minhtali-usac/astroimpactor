@@ -55,6 +55,8 @@ SOFTWARE.
 
 ## Kết cấu ảnh và mô hình 3D · Textures and 3D models
 
+- `src/images/earth_day_4k.jpg`, `earth_night_4k.jpg`: ảnh NASA Blue Marble và Black Marble (phạm vi công cộng · public domain), bản 4096×2048 lấy từ bộ ví dụ của [three-globe](https://github.com/vasturiano/three-globe) (MIT).
+
 Kế thừa từ dự án gốc, theo ghi chú của dự án đó · Carried over from the upstream project, which credits:
 
 - [Solar System Scope – Textures](https://www.solarsystemscope.com/textures/) (CC BY 4.0): bản đồ bề mặt hành tinh, Mặt Trời, vành đai Sao Thổ.

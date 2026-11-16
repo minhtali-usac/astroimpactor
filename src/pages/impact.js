@@ -9,10 +9,11 @@ import { geodesicRing, destination, haversineKm, normLng } from '../lib/geo.js';
 import { HISTORIC_EVENTS, COMPOSITIONS, CITIES } from '../lib/places.js';
 import { createEarthGlobe, isLand, landReady } from '../lib/globe.js';
 import * as fmt from '../lib/format.js';
+import { initBuddy } from '../mascot/buddy.js';
 import { mountTopbar, initTooltips, initRanges, paintRange, initCollapsibles, initModals, openModal, toast, loader as makeLoader } from '../lib/ui.js';
 
 mountTopbar('impact', '', {
-  question: 'Điều gì thực sự quyết định mức độ tàn phá của một vụ va chạm?',
+  question: 'Điều gì quyết định sức tàn phá?',
   help: `<ul class="about-list">
   <li><span>①</span><div><b>Chọn một sự kiện lịch sử</b> (Chelyabinsk, Tunguska, Chicxulub…) để tái hiện, hoặc tự nhập thông số.</div></li>
   <li><span>②</span><div><b>Thiên thạch:</b> đường kính, thành phần (khối lượng riêng), vận tốc vào khí quyển và góc so với mặt đất.</div></li>
@@ -139,13 +140,17 @@ function refreshHtml() {
 }
 function updateTargetMarker() { refreshHtml(); }
 
-world.onGlobeClick(({ lat, lng }) => {
+function pickLocation({ lat, lng }) {
   if (anim) return;
   els.lat.value = lat.toFixed(3); els.lng.value = lng.toFixed(3);
   state.scenario = null; $('scenarioName').textContent = 'Kịch bản tuỳ chỉnh';
   document.querySelectorAll('#events .chip').forEach(c => c.classList.remove('on'));
   detectSurface(); clearImpact(); refreshHtml(); onParamChange();
-});
+}
+world.onGlobeClick(pickLocation);
+// các lớp vẽ đè (vùng ảnh hưởng, chấm đảo) chặn sự kiện nhấp của quả địa cầu ⇒ chuyển tiếp toạ độ
+world.onPolygonClick((_, __, c) => c && pickLocation(c));
+world.onPointClick((_, __, c) => c && pickLocation(c));
 
 // ---------------------------------------------------------------------------
 //  Vùng ảnh hưởng
@@ -167,6 +172,7 @@ const DEFAULT_LAYERS = { cavity: true, crater: true, fireball: true, op20: true,
 
 function drawZones() {
   const r = state.result, p = r?.p;
+  document.body.classList.toggle('zones-on', !!(r && state.landed));
   if (!r || !state.landed) { world.polygonsData([]); zoneLabels = []; refreshHtml(); return; }
   const zones = r.zones.filter(z => state.layers[z.id] ?? DEFAULT_LAYERS[z.id]).sort((a, b) => b.radius - a.radius);
   const polys = zones.map((z, i) => {
@@ -178,7 +184,7 @@ function drawZones() {
     };
   });
   world.polygonsData(polys);
-  zoneLabels = zones.filter(z => z.radius > 3000 && z.id !== 'crater' && z.id !== 'cavity').map(z => {
+  zoneLabels = zones.filter(z => z.radius > 3000 && z.id.startsWith('op')).map(z => {
     const [lng, lat] = destination(p.lat, p.lng, Math.PI * 0.25, Math.min(z.radius / 1000, 15000) / 6371);
     return { kind: 'zone', lat, lng, alt: 0.003, color: z.color, text: z.id.startsWith('op') ? `${z.label.split(' —')[0]}` : z.label };
   });
@@ -224,7 +230,7 @@ function renderResults() {
   const shockArrival = hitCities.length ? (() => { const c = hitCities[0]; return `Sóng xung kích tới <b>${c.name}</b> (cách ${fmt.num(c.d)} km) sau khoảng <b>${fmt.num(c.d / 0.34 / 60, 0)} phút</b>.`; })() : '';
 
   $('results').innerHTML = `
-    ${state.landed ? '' : `<div class="note" style="margin-top:10px">Kết quả <b>dự kiến</b> — cập nhật ngay khi thay đổi thông số. Bấm <b>☄️ Thả thiên thạch</b> để xem mô phỏng và vẽ vùng ảnh hưởng lên bản đồ.</div>`}
+    ${state.landed ? '' : `<div class="note" style="margin-top:10px">Kết quả <b>dự kiến</b> · bấm <b>☄️ Thả thiên thạch</b> để xem trên bản đồ</div>`}
     <div class="hero" style="background:linear-gradient(135deg,rgba(139,123,255,.14),rgba(94,231,255,.06));border-color:rgba(139,123,255,.35)">
       <div class="k">Năng lượng giải phóng</div>
       <div class="v" style="color:#d6ceff">${fmt.energy(r.energyMt)}</div>
@@ -275,6 +281,7 @@ function renderResults() {
 }
 
 let renderTimer = 0;
+let dog = null;
 function onParamChange() {
   syncLabels();
   const p = params();
@@ -447,6 +454,14 @@ function explode(a) {
     drawZones();
     renderResults();
     const pop = r.zones.find(z => z.id === 'op5')?.pop ?? 0;
+    if (dog) {
+      const line = r.isAirburst
+        ? `Bùm! Nổ trên không ở ${fmt.num(r.airburstAlt / 1000, 1)} km, không tạo hố.`
+        : r.energyMt > 1e5 ? `Thảm hoạ toàn cầu: ${fmt.energy(r.energyMt)}!`
+        : `${fmt.energy(r.energyMt)}${r.crater ? `, hố rộng ${fmt.dist(r.crater.diameter)}` : ''}.`;
+      const s2 = world.getScreenCoords(p.lat, p.lng, 0);
+      dog.visit(s2.x, s2.y + 110, { say: line, mood: r.energyMt > 1e3 ? 'sad' : 'think', stay: 5500 });
+    }
     toast(r.isAirburst ? 'Nổ trên không!' : 'Va chạm!', `${fmt.energy(r.energyMt)}${pop ? ` · ~${fmt.people(pop)} dân đô thị trong vùng 5 psi` : ''}`, r.energyMt > 100 ? 'danger' : 'warn', 4500);
   }, 900);
 }
@@ -485,6 +500,7 @@ function runEvent(id) {
   $('scenarioName').innerHTML = `${ev.name} · <a href="${ev.wiki}" target="_blank" rel="noopener">Wikipedia ↗</a>`;
   document.querySelectorAll('#events .chip').forEach(c => c.classList.toggle('on', c.dataset.id === id));
   toast(ev.name, ev.text, 'info', 6000);
+  if (dog && !dog.muted) setTimeout(() => dog.say(`${ev.name}: nổ trên không hay tạo hố? Đoán thử nhé!`, 'think'), 400);
   clearImpact(); refreshHtml(); onParamChange();
   setTimeout(launch, 200);
 }
@@ -513,6 +529,11 @@ $('events').addEventListener('click', e => { const b = e.target.closest('.chip')
   if (!q.get('target')) detectSurface();
   onParamChange();
   load.done();
+  dog = initBuddy('impact', { explain: () => {
+    const r = state.result; if (!r) return '';
+    const p = r.p;
+    return `${fmt.energy(r.energyMt)} — ${r.isAirburst ? `vỡ ở ${fmt.num(r.breakupAlt / 1000, 1)} km vì không khí ép mạnh hơn độ bền đá` : r.crater ? `tạo hố ${fmt.dist(r.crater.diameter)}` : 'bị nước hãm lại'}. Cứ ~${fmt.years(r.recurrenceYears)} mới có một vụ.`;
+  } });
   if (innerWidth < 900) $('resultPanel').classList.add('m-hide');
   if (q.has('d')) world.pointOfView({ lat: +els.lat.value, lng: +els.lng.value, altitude: 1.8 }, 1000);
 })();

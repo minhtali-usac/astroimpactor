@@ -58,9 +58,8 @@
           <input type="checkbox" id="fRisk" /><span class="track"></span><span class="lbl">Chỉ vật thể trong danh sách rủi ro</span><span class="count" id="riskCount"></span>
         </label>
         <div class="field" style="margin-top:8px">
-          <div class="field-label">Đường kính tối thiểu <span class="val" id="fMinDOut">tất cả</span></div>
+          <div class="field-label">Đường kính tối thiểu <span class="info" data-tip="≥ 140 m là ngưỡng của vật thể có khả năng gây nguy hiểm (PHA)."></span><span class="val" id="fMinDOut">tất cả</span></div>
           <input type="range" id="fMinD" min="0" max="5" step="1" value="0" />
-          <div class="field-hint">≥ 140 m là ngưỡng của "vật thể có khả năng gây nguy hiểm" (PHA).</div>
         </div>
       </div>
 
@@ -81,13 +80,6 @@
         <div class="field" style="margin-top:8px">
           <div class="field-label">Phóng đại hành tinh <span class="info" data-tip-title="Vì sao phải phóng đại?" data-tip="Ở tỉ lệ thật (1 AU = 150 đơn vị), Trái Đất chỉ rộng 0,006 đơn vị — nhỏ hơn một điểm ảnh. Khoảng cách và quỹ đạo luôn đúng tỉ lệ; chỉ kích thước hành tinh được phóng to để dễ quan sát."></span><span class="val" id="pScaleOut">×1</span></div>
           <input type="range" id="pScale" min="0.3" max="3" step="0.1" value="1" />
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="note">
-          <b>Dữ liệu:</b> 39.529 NEO từ ESA NEOCC (yếu tố Kepler hoàng đạo J2000). Hành tinh theo lịch JPL (Standish).
-          Vị trí tính bằng phương trình Kepler <span class="mono">M = E − e·sin E</span> theo thời gian mô phỏng.
         </div>
       </div>
     </div>

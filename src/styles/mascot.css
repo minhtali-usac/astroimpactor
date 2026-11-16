@@ -1,0 +1,78 @@
+/* Chó phi hành gia — người đồng hành (theo Sên phi hành gia của Aurora-LAB) */
+.mascot {
+  position: fixed; right: 10px; bottom: calc(var(--footer-h) + 2px); z-index: 36;
+  width: 96px; height: 96px; padding: 0; border: 0; background: none; cursor: pointer;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px rgba(255, 138, 43, 0.3));
+  scale: 1; transform-origin: 50% 85%;
+  transition: translate 1.2s cubic-bezier(.45, .05, .3, 1), scale .55s cubic-bezier(.3, 1.6, .5, 1);
+}
+.mascot-3d { width: 100%; height: 100%; display: block; }
+.mascot-img { display: grid; place-items: center; width: 100%; height: 100%; font-size: 52px; }
+.mascot.m3d .mascot-img { display: none; }
+.mascot::after { content: ""; position: absolute; right: 10px; top: 8px; width: 9px; height: 9px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 2px var(--bg), 0 0 10px var(--brand); animation: bdPulse 2.4s ease-in-out infinite; }
+@keyframes bdPulse { 50% { transform: scale(1.35); opacity: 0.6; } }
+.mascot[aria-expanded="true"]::after { display: none; }
+.mascot.in-dialog, .bd-menu.in-dialog { z-index: 85; }
+.mascot-bubble {
+  position: absolute; right: 92px; bottom: 26px;
+  width: max-content; max-width: min(260px, calc(100vw - 110px));
+  padding: 9px 12px; border-radius: 12px 12px 2px 12px;
+  background: #f5f7fb; color: #10131a; font: 400 13px/1.45 var(--font); text-align: left;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  opacity: 0; transform: translateY(6px) scale(0.97); transform-origin: bottom right;
+  transition: opacity .2s, transform .2s; pointer-events: none;
+}
+.mascot.talk .mascot-bubble { opacity: 1; transform: none; }
+.mascot.win .mascot-bubble { background: #fff3e6; }
+.mascot.bubble-left .mascot-bubble { right: auto; left: 92px; border-radius: 12px 12px 12px 2px; transform-origin: bottom left; }
+.mascot.big { scale: 2.1; }
+.mascot.grow-corner { transform-origin: 100% 100%; }
+.mascot.big .mascot-bubble { scale: 0.48; right: 70px; transform-origin: bottom right; }
+.mascot.big.in-dialog { scale: 1; } /* không phóng to khi đang mở hộp thoại */
+.mascot.big.bubble-left .mascot-bubble { right: auto; left: 70px; transform-origin: bottom left; }
+.mascot.napping::before { content: "z z z"; position: absolute; right: 6px; top: -12px; font: 700 12px var(--f-display); letter-spacing: 2px; color: #ffd2a0; animation: zz 2.4s ease-in-out infinite; pointer-events: none; }
+@keyframes zz { 50% { transform: translateY(-6px); opacity: .5; } }
+
+.bd-menu {
+  position: fixed; right: 14px; bottom: calc(var(--footer-h) + 104px); z-index: 37; width: min(300px, calc(100vw - 28px));
+  padding: 8px; border-radius: 16px; background: rgba(14, 17, 26, 0.97); border: 1px solid var(--line-3);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 138, 43, 0.12); backdrop-filter: blur(10px);
+  transform-origin: bottom right; animation: bdIn .18s ease;
+}
+.bd-menu[hidden] { display: none; }
+@keyframes bdIn { from { opacity: 0; transform: translateY(8px) scale(0.97); } }
+.bd-head { display: flex; align-items: center; gap: 10px; padding: 4px 8px 8px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.bd-head img { width: 44px; height: 44px; flex: none; }
+.bd-head b { display: block; font: 700 14px var(--f-display); color: var(--brand-hi); }
+.bd-head span { font-size: 12px; color: var(--muted); }
+.bd-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 10px; background: none; color: var(--text); font-size: 13.5px; text-align: left; }
+.bd-item:hover, .bd-item:focus-visible { background: var(--surface-2); outline: none; }
+.bd-ic { width: 26px; height: 26px; flex: none; display: grid; place-items: center; border-radius: 8px; background: var(--surface-3); font-size: 14px; }
+.bd-mute { color: var(--muted); border-top: 1px solid var(--line); border-radius: 0 0 10px 10px; margin-top: 4px; }
+
+/* Kiểm tra nhanh */
+.quiz-q { padding: 12px 14px; margin-bottom: 10px; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--line); }
+.quiz-t { margin: 0 0 8px !important; color: var(--text) !important; }
+.quiz-opt { display: block; width: 100%; margin-top: 6px; padding: 9px 12px; border-radius: 10px; text-align: left; font-size: 13.5px; background: var(--surface-2); border: 1px solid var(--line-strong); color: var(--text); }
+.quiz-opt:hover:not(:disabled) { border-color: var(--brand); }
+.quiz-opt:disabled { cursor: default; opacity: .75; }
+.quiz-opt.ok { border-color: var(--ok); background: rgba(94, 230, 160, 0.12); opacity: 1; }
+.quiz-opt.bad { border-color: var(--danger); background: rgba(255, 107, 107, 0.12); opacity: 1; }
+.quiz-why { margin: 8px 0 0 !important; font-size: 13px; color: var(--muted) !important; }
+.quiz-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.quiz-score { margin: 0 !important; font: 700 15px var(--f-display); color: var(--brand-hi) !important; }
+
+.dog-fx { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 95; }
+
+/* chừa chỗ cho Chó ở góc dưới phải */
+.panel-right { max-height: calc(100vh - var(--topbar-h) - var(--footer-h) - 24px - 104px); }
+
+@media (max-width: 900px) {
+  .mascot { width: 68px; height: 68px; right: 4px; bottom: 6px; }
+  .mascot-bubble { right: 66px; bottom: 14px; }
+  .mascot.bubble-left .mascot-bubble { left: 66px; }
+  .mascot.big { scale: 1.6; }
+  .bd-menu { bottom: 82px; }
+  .panel-right { bottom: 80px; max-height: 50vh; }
+}
+@media (prefers-reduced-motion: reduce) { .mascot { transition: none; } }

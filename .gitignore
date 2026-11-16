@@ -2,3 +2,4 @@ node_modules/
 dist/
 _backup_original/
 .claude/
+tests/uat-shots/
