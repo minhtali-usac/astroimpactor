@@ -173,7 +173,7 @@ export function mountDog(btn) {
   let renderer;
   try { renderer = makeRenderer(size()); } catch { return noop; }
   // vẽ ở độ phân giải gấp ~2,2 lần để khi phóng to (scale 2,1) vẫn sắc nét
-  renderer.setPixelRatio(Math.min(5, (window.devicePixelRatio || 1) * 2.2));
+  renderer.setPixelRatio(Math.min(3, (window.devicePixelRatio || 1) * 1.6));
   const { scene, cam, m } = makeScene(); withEnv(renderer, scene);
   renderer.domElement.className = 'mascot-3d';
   btn.prepend(renderer.domElement);
@@ -188,9 +188,11 @@ export function mountDog(btn) {
   }, { passive: true });
 
   const clock = new THREE.Clock();
-  const loop = () => {
+  let lastDraw = 0;
+  const loop = now => {
     requestAnimationFrame(loop);
-    if (document.hidden) return;
+    if (document.hidden || now - lastDraw < 32) return; // 30 fps là đủ mượt cho linh vật
+    lastDraw = now;
     const dt = Math.min(0.05, clock.getDelta()), t = clock.elapsedTime;
     runK += ((run ? 1 : 0) - runK) * Math.min(1, dt * 6);
     sleepK += ((sleep ? 1 : 0) - sleepK) * Math.min(1, dt * 2);

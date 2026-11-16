@@ -9,6 +9,7 @@ import Globe from 'globe.gl';
 import { feature as topoFeature, merge as topoMerge } from 'topojson-client';
 import { subsolarPoint, pointInMultiPolygon, VIETNAM_ARCHIPELAGOS, VIETNAM_ISLANDS } from './geo.js';
 import { CITIES } from './places.js';
+import { adaptiveQuality } from './perf.js';
 import earthDay from '../images/earth_day_4k.jpg';
 import earthNight from '../images/earth_night_4k.jpg';
 import earthSpec from '../images/earth_specularmap.jpg';
@@ -96,10 +97,10 @@ export function createEarthGlobe(el, opts = {}) {
   light.forEach(l => { if (l.isDirectionalLight) l.position.copy(sunDir).multiplyScalar(R * 10); });
 
   // --- Nhãn HTML: quần đảo Việt Nam + thành phố + phần tử riêng của trang ---
-  const base = [
-    ...VIETNAM_ARCHIPELAGOS.map(a => ({ ...a, kind: 'archipelago' })),
-    ...(opts.showCities === false ? [] : CITIES.map(c => ({ ...c, kind: 'city' }))),
-  ];
+  const archs = VIETNAM_ARCHIPELAGOS.map(a => ({ ...a, kind: 'archipelago' }));
+  const cities = opts.showCities === false ? [] : CITIES.map(c => ({ ...c, kind: 'city' }));
+  let showCities = true;
+  const base = () => (showCities ? [...archs, ...cities] : archs);
   const renderBase = d => {
     const node = document.createElement('div');
     if (d.kind === 'archipelago') {
@@ -113,7 +114,7 @@ export function createEarthGlobe(el, opts = {}) {
   };
   let extra = opts.extraHtml || [];
   const applyHtml = () => world
-    .htmlElementsData([...base, ...extra])
+    .htmlElementsData([...base(), ...extra])
     .htmlLat('lat').htmlLng('lng')
     .htmlAltitude(d => d.alt ?? (d.kind === 'city' ? 0.004 : 0.01))
     .htmlElement(d => {
@@ -135,8 +136,14 @@ export function createEarthGlobe(el, opts = {}) {
 
   addEventListener('resize', () => world.width(innerWidth).height(innerHeight));
   // Khi nhìn từ xa, thu gọn nhãn để không che Trái Đất
-  const onZoom = pov => document.body.classList.toggle('globe-far', pov.altitude > 3.5);
+  // Nhìn từ xa: bỏ hẳn nhãn thành phố khỏi DOM (mỗi nhãn tốn một lần cập nhật vị trí mỗi khung hình)
+  const onZoom = pov => {
+    const far = pov.altitude > 3;
+    document.body.classList.toggle('globe-far', far);
+    if (showCities === far) { showCities = !far; applyHtml(); }
+  };
   world.onZoom(pov => { onZoom(pov); opts.onZoom?.(pov); });
+  adaptiveQuality(world.renderer());
 
   return {
     world, R, sunDir, material, islandPoints,

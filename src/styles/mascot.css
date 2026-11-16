@@ -2,7 +2,6 @@
 .mascot {
   position: fixed; right: 10px; bottom: calc(var(--footer-h) + 2px); z-index: 36;
   width: 96px; height: 96px; padding: 0; border: 0; background: none; cursor: pointer;
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px rgba(255, 138, 43, 0.3));
   scale: 1; transform-origin: 50% 85%;
   transition: translate 1.2s cubic-bezier(.45, .05, .3, 1), scale .55s cubic-bezier(.3, 1.6, .5, 1);
 }
@@ -36,7 +35,7 @@
 .bd-menu {
   position: fixed; right: 14px; bottom: calc(var(--footer-h) + 104px); z-index: 37; width: min(300px, calc(100vw - 28px));
   padding: 8px; border-radius: 16px; background: rgba(14, 17, 26, 0.97); border: 1px solid var(--line-3);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 138, 43, 0.12); backdrop-filter: blur(10px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 138, 43, 0.12);
   transform-origin: bottom right; animation: bdIn .18s ease;
 }
 .bd-menu[hidden] { display: none; }

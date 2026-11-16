@@ -29,7 +29,7 @@
 .cls .name { width: 56px; }
 
 /* Thanh thời gian */
-.timebar { position: fixed; z-index: 30; left: 50%; bottom: calc(var(--footer-h) + 12px); transform: translateX(-50%); display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); backdrop-filter: blur(14px); }
+.timebar { position: fixed; z-index: 30; left: 50%; bottom: calc(var(--footer-h) + 12px); transform: translateX(-50%); display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); }
 .tb-date { min-width: 150px; }
 .tb-date .mono { font-size: 18px; font-weight: 600; letter-spacing: .5px; }
 .tb-rate { font-size: 12px; color: var(--muted); }

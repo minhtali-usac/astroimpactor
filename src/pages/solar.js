@@ -24,6 +24,7 @@ import {
 } from '../lib/orbit.js';
 import * as fmt from '../lib/format.js';
 import { initBuddy } from '../mascot/buddy.js';
+import { adaptiveQuality } from '../lib/perf.js';
 import { mountTopbar, initModals, initTooltips, initRanges, paintRange, initCollapsibles, loader as makeLoader, fetchWithProgress, toast } from '../lib/ui.js';
 
 import bg1 from '../images/1.jpg';
@@ -465,9 +466,11 @@ async function loadNEO() {
 }
 
 /** Cập nhật vị trí toàn bộ NEO tại thời điểm mjd (Kepler + khởi động ấm). */
-function updateNEO(mjd) {
-  const { N, a, e, b, n, M0, epoch, basis, E: Eprev, pos } = NEO;
+let neoForce = true; // true ⇒ cập nhật cả vật thể đang ẩn (sau khi đổi bộ lọc)
+function updateNEO(mjd, force = false) {
+  const { N, a, e, b, n, M0, epoch, basis, E: Eprev, pos, visible } = NEO;
   for (let k = 0; k < N; k++) {
+    if (!force && !visible[k]) continue; // vật thể bị lọc không cần tính
     const ek = e[k];
     let M = M0[k] + n[k] * (mjd - epoch[k]);
     M -= TWO_PI * Math.round(M / TWO_PI);           // về [−π, π]
@@ -544,6 +547,7 @@ function applyFilters() {
     count += ok;
   }
   neoPoints.geometry.attributes.aVisible.needsUpdate = true;
+  neoForce = true;
   document.getElementById('neoCount').textContent = `Hiển thị ${fmt.num(count)} / ${fmt.num(N)} vật thể`;
   if (document.getElementById('tOrbits').checked) buildFilteredOrbits();
 }
@@ -1063,7 +1067,7 @@ function frame() {
   time.mjd += rate * dt;
 
   updatePlanets(dt, rate);
-  if (NEO.N && time.mjd !== lastNEOmjd) { updateNEO(time.mjd); lastNEOmjd = time.mjd; }
+  if (NEO.N && (time.mjd !== lastNEOmjd || neoForce)) { updateNEO(time.mjd, neoForce); neoForce = false; lastNEOmjd = time.mjd; }
 
   const dText = fmt.dateVN(mjdToDate(time.mjd), Math.abs(rate) < 1);
   if (dText !== lastDateText) { document.getElementById('simDate').textContent = dText; lastDateText = dText; }
@@ -1112,6 +1116,8 @@ addEventListener('resize', () => {
 // ---------------------------------------------------------------------------
 //  Khởi động
 // ---------------------------------------------------------------------------
+adaptiveQuality(renderer, { onChange: r => { neoMaterial.uniforms.uPixel.value = r; stars.material.uniforms.uPixel.value = r; } });
+
 (async () => {
   try {
     load.set(0.05, 'Dựng hành tinh…');
@@ -1123,7 +1129,7 @@ addEventListener('resize', () => {
     applyFilters();
     renderClassFilters();
     renderFamous();
-    updateNEO(time.mjd);
+    updateNEO(time.mjd, true);
     load.set(1, 'Sẵn sàng');
     load.done();
     dog = initBuddy('solar', { explain: dogExplain });
