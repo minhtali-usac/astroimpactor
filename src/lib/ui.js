@@ -34,7 +34,7 @@ export function mountTopbar(active, extraHtml = '', opts = {}) {
   bar.innerHTML = `
     <a class="brand" href="./index.html" aria-label="IMPACTOR, CLB Thiên văn USAC">
       <img class="brand-logo" src="./og-logo.png" alt="Logo CLB Thiên văn USAC" width="44" height="44">
-      <span class="brand-text"><span class="brand-name">IMPACT<em>OR</em></span><span class="brand-sub">Asteroid Impact Simulation</span></span>
+      <span class="brand-text"><span class="brand-name">IMPACTOR</span><span class="brand-sub">Asteroid Impact Simulation</span></span>
     </a>
     <nav class="nav" aria-label="Phần mô phỏng">${PAGES.map((p, i) => `
       <a href="${p.href}" class="${p.id === active ? 'active' : ''}" ${p.id === active ? 'aria-current="page"' : ''} title="${p.title} · ${p.sub}">
