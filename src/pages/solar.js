@@ -114,7 +114,7 @@ const maxAniso = renderer.capabilities.getMaxAnisotropy();
 const tex = (url, srgb = true) => {
   const t = texLoader.load(url);
   if (srgb) t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = Math.min(8, maxAniso);
+  t.anisotropy = Math.min(16, maxAniso);
   return t;
 };
 

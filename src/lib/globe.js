@@ -26,9 +26,9 @@ export const landReady = import('world-atlas/land-50m.json').then(m => {
 /** true = đất liền, false = đại dương, null = chưa có dữ liệu */
 export const isLand = (lat, lng) => (landMulti ? pointInMultiPolygon(lng, lat, landMulti) : null);
 
-function makeMaterial(sunDir) {
+function makeMaterial(sunDir, aniso = 8) {
   const loader = new THREE.TextureLoader();
-  const t = (u, srgb = true) => { const x = loader.load(u); if (srgb) x.colorSpace = THREE.SRGBColorSpace; x.anisotropy = 8; return x; };
+  const t = (u, srgb = true) => { const x = loader.load(u); if (srgb) x.colorSpace = THREE.SRGBColorSpace; x.anisotropy = aniso; return x; };
   return new THREE.ShaderMaterial({
     uniforms: { dayMap: { value: t(earthDay) }, nightMap: { value: t(earthNight) }, specMap: { value: t(earthSpec, false) }, sunDir: { value: sunDir } },
     vertexShader: /* glsl */`
@@ -90,7 +90,7 @@ export function createEarthGlobe(el, opts = {}) {
   const sub = subsolarPoint(new Date());
   const s = world.getCoords(sub.lat, sub.lng, 0);
   const sunDir = new THREE.Vector3(s.x, s.y, s.z).normalize();
-  const material = makeMaterial(sunDir);
+  const material = makeMaterial(sunDir, Math.min(16, world.renderer().capabilities.getMaxAnisotropy()));
   world.globeMaterial(material);
   world.scene().add(starfield(R * 40));
   const light = world.lights?.() || [];
