@@ -11,6 +11,7 @@
 // ============================================================================
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import {
   MU_EARTH, R_EARTH, ATMOSPHERE_KM, GEO_ALT_KM, DAY, asteroidMass, kineticDv, laserAccel, leverage,
   bPlaneShiftKm, captureRadius, escapeVelocity, integrateFlyby, sampleAt,
@@ -651,8 +652,10 @@ addEventListener('keyup', e => { if (e.code === 'Space') setFiring(false); });
   requestAnimationFrame(loop);
   load.set(0.5, 'Tải mô hình vệ tinh & tên lửa…');
   const loader = new GLTFLoader();
+  const draco = new DRACOLoader(); draco.setDecoderPath('./draco/'); // mô hình NASA nén Draco; bộ giải nén phục vụ cùng nguồn
+  loader.setDRACOLoader(draco);
   const [satG, rocketG] = await Promise.allSettled([loader.loadAsync('./models/satellite.glb'), loader.loadAsync('./models/rocket.glb'), landReady]);
-  if (satG.status === 'fulfilled') sat.add(fitModel(satG.value.scene, R * 0.14));
+  if (satG.status === 'fulfilled') sat.add(fitModel(satG.value.scene, R * 0.34));
   else sat.add(new THREE.Mesh(new THREE.BoxGeometry(R * 0.05, R * 0.02, R * 0.12), new THREE.MeshStandardMaterial({ color: 0xccddee })));
   const satGlow = glowSprite('rgba(180,240,255,0.9)', 'rgba(94,231,255,0.2)');
   satGlow.scale.set(R * 0.05, R * 0.05, 1);

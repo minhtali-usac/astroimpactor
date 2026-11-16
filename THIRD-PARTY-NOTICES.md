@@ -62,4 +62,6 @@ Kế thừa từ dự án gốc, theo ghi chú của dự án đó · Carried ov
 - [Solar System Scope – Textures](https://www.solarsystemscope.com/textures/) (CC BY 4.0): bản đồ bề mặt hành tinh, Mặt Trời, vành đai Sao Thổ.
 - [Planet Pixel Emporium](https://planetpixelemporium.com/) (miễn phí cho mục đích phi thương mại · free for non-commercial use): bản đồ độ cao (bump) và một số bản đồ bề mặt.
 - [NASA 3D Resources](https://nasa3d.arc.nasa.gov/) (không giới hạn bản quyền · no copyright restrictions for NASA-produced media): mô hình Phobos, Deimos, kết cấu các vệ tinh Galileo.
-- Mô hình vệ tinh (`public/models/satellite.glb`) và tên lửa (`public/models/rocket.glb`) — kế thừa từ dự án gốc · from the upstream project.
+- Mô hình tàu vũ trụ ở Defender (`public/models/satellite.glb`): **OSIRIS-REx** từ [NASA 3D Resources](https://github.com/nasa/NASA-3D-Resources) (không có bản quyền · free of copyright, theo hướng dẫn sử dụng của NASA).
+- Bộ giải nén Draco (`public/draco/`): Google Draco, giấy phép Apache 2.0, đi kèm three.js.
+- Mô hình tên lửa (`public/models/rocket.glb`) — kế thừa từ dự án gốc · from the upstream project.
