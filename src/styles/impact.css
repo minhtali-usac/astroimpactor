@@ -1,0 +1,33 @@
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 5px 10px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); background: var(--panel-raise); cursor: pointer; color: var(--muted); transition: all .2s; }
+.chip:hover { color: var(--text); border-color: #ff8a5c; }
+.chip.on { color: #ffc29e; border-color: #ff8a5c; background: rgba(255, 122, 69, 0.12); }
+
+.hero { padding: 14px; margin-top: 10px; border-radius: 12px; background: linear-gradient(135deg, rgba(255, 77, 109, 0.14), rgba(255, 179, 71, 0.08)); border: 1px solid rgba(255, 122, 69, 0.3); }
+.hero .k { font-size: 12px; color: var(--muted); }
+.hero .v { font-family: var(--mono); font-size: 24px; font-weight: 700; color: #ffd0b0; line-height: 1.2; margin: 2px 0; }
+.hero .c { font-size: 12.5px; color: var(--text); }
+.hero.air { background: linear-gradient(135deg, rgba(255, 138, 43, 0.12), rgba(139, 123, 255, 0.1)); border-color: rgba(255, 138, 43, 0.3); }
+
+.zone { display: grid; grid-template-columns: 14px 1fr auto; gap: 4px 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.zone:last-child { border-bottom: 0; }
+.zone .sw { width: 14px; height: 14px; border-radius: 4px; }
+.zone .r { font-family: var(--mono); font-size: 12.5px; text-align: right; }
+.zone .sub { grid-column: 2 / -1; font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.zone.off { opacity: .4; }
+.zone { cursor: pointer; }
+.zone:hover .r { color: var(--accent); }
+
+.cities { display: flex; flex-wrap: wrap; gap: 5px; }
+.cities span { padding: 2px 8px; border-radius: 6px; font-size: 12px; background: rgba(255, 77, 109, 0.1); border: 1px solid rgba(255, 77, 109, 0.3); }
+.cities span.vn { background: rgba(255, 210, 63, 0.1); border-color: rgba(255, 210, 63, 0.4); color: #ffe27a; }
+
+.timeline { display: flex; flex-direction: column; gap: 0; margin: 4px 0 0; padding-left: 14px; border-left: 2px solid var(--line); }
+.timeline div { position: relative; padding: 4px 0 6px; font-size: 12.5px; color: var(--muted); }
+.timeline div::before { content: ''; position: absolute; left: -19px; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.timeline b { color: var(--text); }
+
+.empty { text-align: center; padding: 24px 6px; color: var(--muted); font-size: 13px; }
+.empty .big { font-size: 40px; margin-bottom: 6px; }
+
+#paramPanel .chips { margin: 0; }

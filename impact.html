@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IMPACTOR · Destroyer – Kiến tạo va chạm | CLB Thiên văn USAC</title>
+  <meta name="description" content="IMPACTOR – Asteroid Impact Simulation của CLB Thiên văn USAC: quan sát gần 40.000 thiên thể gần Trái Đất, kiến tạo kịch bản va chạm (Destroyer) và bảo vệ hành tinh (Defender) bằng vật lý thật." />
+  <meta name="theme-color" content="#040509" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="IMPACTOR · Asteroid Impact Simulation" />
+  <meta property="og:description" content="IMPACTOR – Asteroid Impact Simulation của CLB Thiên văn USAC: quan sát gần 40.000 thiên thể gần Trái Đất, kiến tạo kịch bản va chạm (Destroyer) và bảo vệ hành tinh (Defender) bằng vật lý thật." />
+  <meta property="og:image" content="https://astroimpactorlab.clbtvusac.com/og-logo.png" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="apple-touch-icon" href="./favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./src/styles/theme.css" />
+  <link rel="stylesheet" href="./src/styles/globe.css" />
+  <link rel="stylesheet" href="./src/styles/impact.css" />
+</head>
+<body>
+  <div id="loader" class="loader">
+    <div class="loader-box">
+      <img class="loader-logo" src="./og-logo.png" alt="" width="72" height="72" />
+      <div class="loader-name">IMPACT<em>OR</em></div>
+      <div class="loader-sub">ASTEROID IMPACT SIMULATION</div>
+      <div class="loader-text" style="margin-top:0">Đang chuẩn bị quả địa cầu…</div>
+      <div class="loader-bar"><div></div></div>
+      <div class="loader-text">Tải bản đồ & dữ liệu dân số</div>
+    </div>
+  </div>
+
+  <div id="globe"></div>
+  <div class="flash" id="flash"></div>
+
+  <!-- Thông số -->
+  <aside class="panel panel-left" id="paramPanel">
+    <div class="panel-head">
+      <h2>Thiết lập va chạm<span class="sub" id="scenarioName">Chọn sự kiện lịch sử hoặc tự nhập</span></h2>
+      <button class="btn icon-btn" data-collapse="paramPanel" title="Thu gọn">▴</button>
+    </div>
+    <div class="panel-body">
+      <div class="section">
+        <div class="section-title">Sự kiện lịch sử</div>
+        <div class="chips" id="events"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Thiên thạch</div>
+        <div class="field">
+          <div class="field-label">Đường kính <span class="info" data-tip-title="Đường kính" data-tip="Khối lượng tỉ lệ với D³ — gấp đôi đường kính thì năng lượng tăng 8 lần."></span></div>
+          <div class="row">
+            <input id="iDiameter" type="number" min="1" step="any" value="100" />
+            <select id="iUnit" style="flex:0 0 72px"><option value="m">m</option><option value="km">km</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">Thành phần <span class="val" id="iDensityOut">2.750 kg/m³</span></div>
+          <select id="iComp"></select>
+        </div>
+        <div class="field">
+          <div class="field-label">Vận tốc khi vào khí quyển <span class="info" data-tip-title="Vận tốc" data-tip="Tối thiểu ≈ 11 km/s (vận tốc thoát của Trái Đất), tối đa ≈ 72 km/s (sao chổi quỹ đạo ngược). Năng lượng ∝ v²."></span><span class="val" id="iVelOut">20 km/s</span></div>
+          <input type="range" id="iVel" min="11" max="72" step="0.5" value="20" />
+        </div>
+        <div class="field">
+          <div class="field-label">Góc va chạm <span class="info" data-tip-title="Góc so với mặt đất" data-tip="90° = rơi thẳng đứng; góc phổ biến nhất là 45°. Góc nhỏ khiến thiên thạch đi qua nhiều khí quyển hơn và dễ vỡ vụn trên không."></span><span class="val" id="iAngleOut">45°</span></div>
+          <input type="range" id="iAngle" min="5" max="90" step="1" value="45" />
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Vị trí</div>
+        <div class="grid-2">
+          <div class="field"><div class="field-label">Vĩ độ</div><input id="iLat" type="number" min="-90" max="90" step="0.01" value="16.05" /></div>
+          <div class="field"><div class="field-label">Kinh độ</div><input id="iLng" type="number" min="-180" max="180" step="0.01" value="108.2" /></div>
+        </div>
+        <div class="field-hint" style="margin-top:-4px">👆 Nhấp lên quả địa cầu để chọn điểm va chạm.</div>
+        <div class="field" style="margin-top:10px">
+          <div class="field-label">Bề mặt <span class="val" id="iSurfaceAuto"></span></div>
+          <div class="seg" id="iTarget">
+            <button data-v="sedimentary" class="on">Đá trầm tích</button>
+            <button data-v="crystalline">Đá kết tinh</button>
+            <button data-v="water">Đại dương</button>
+          </div>
+        </div>
+        <div class="field" id="depthField">
+          <div class="field-label">Độ sâu nước <span class="val" id="iDepthOut">3.700 m</span></div>
+          <input type="range" id="iDepth" min="50" max="8000" step="50" value="3700" />
+        </div>
+      </div>
+
+      <div class="section">
+        <button class="btn btn-danger btn-lg btn-block" id="launch">☄️ Thả thiên thạch</button>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="reset">↺ Xoá kết quả</button>
+          <button class="btn" id="share" title="Sao chép đường dẫn kịch bản">🔗 Chia sẻ</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Kết quả -->
+  <aside class="panel panel-right" id="resultPanel">
+    <div class="panel-head">
+      <h2>Hậu quả dự kiến<span class="sub">Mô hình Collins, Melosh & Marcus (2005)</span></h2>
+      <button class="btn icon-btn" data-collapse="resultPanel" title="Thu gọn">▴</button>
+    </div>
+    <div class="panel-body" id="results"></div>
+  </aside>
+
+  <div class="modal" id="methodModal">
+    <div class="modal-card">
+      <h3>Phương pháp tính</h3>
+      <p>Mô phỏng theo chương trình <b>Earth Impact Effects</b> của Collins, Melosh &amp; Marcus (2005, <i>Meteoritics &amp; Planetary Science</i> 40:817).</p>
+      <div class="section">
+        <div class="section-title">1. Năng lượng</div>
+        <span class="formula">E = ½·m·v² = (π/12)·ρ·L³·v²       1 Mt TNT = 4,184×10¹⁵ J</span>
+      </div>
+      <div class="section">
+        <div class="section-title">2. Xuyên khí quyển & vỡ vụn</div>
+        <span class="formula">Độ bền Y = 10^(2,107 + 0,0624·√ρ) Pa</span>
+        <p>Thiên thạch vỡ khi áp suất động ρ<sub>khí</sub>·v² vượt quá Y. Các mảnh lan rộng theo mô hình "bánh kếp"; nếu chúng giãn gấp 7 lần trước khi chạm đất ⇒ <b>nổ trên không</b> (như Tunguska, Chelyabinsk).</p>
+      </div>
+      <div class="section">
+        <div class="section-title">3. Hố va chạm</div>
+        <span class="formula">D_tạm = 1,161·(ρᵢ/ρₜ)^⅓·L^0,78·v^0,44·g^−0,22·sin^⅓θ</span>
+        <p>Hố &gt; 3,2 km sụp thành <b>hố phức tạp</b> (có đỉnh trung tâm): D = 1,17·D_tạm^1,13 / 3200^0,13.</p>
+      </div>
+      <div class="section">
+        <div class="section-title">4. Quả cầu lửa, nhiệt, sóng xung kích, động đất</div>
+        <span class="formula">R_cầu lửa = 0,002·E^⅓ m      Φ(r) = η·E / (2πr²), η = 3×10⁻³</span>
+        <span class="formula">p(r) = (pₓ·rₓ / 4r₁)·(1 + 3(rₓ/r₁)^1,3),  r₁ = r / E_kt^⅓</span>
+        <span class="formula">M = 0,67·log₁₀E − 5,87      T_lặp lại ≈ 109·E_Mt^0,78 năm</span>
+      </div>
+      <p style="font-size:12.5px">Giới hạn: mô hình bỏ qua địa hình, thời tiết, hướng bay (trừ góc), và ước tính dân số dựa trên 11.286 khu đô thị (≈ 2,46 tỷ người) — không phải toàn bộ dân số thế giới. Kết quả mang tính giáo dục.</p>
+      <div class="modal-actions"><button class="btn btn-primary" data-close>Đã hiểu</button></div>
+    </div>
+  </div>
+
+  <button class="btn mobile-toggle fab" id="mParams" style="position:fixed;z-index:35;left:16px;bottom:16px">⚙️ Thiết lập</button>
+
+  <script type="module" src="./src/pages/impact.js"></script>
+</body>
+</html>

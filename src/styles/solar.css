@@ -1,0 +1,63 @@
+:root { --bottom-reserve: 84px; }
+#scene { position: fixed; inset: 0; }
+#scene canvas { touch-action: none; }
+
+/* Nhãn hành tinh (CSS2D) */
+.p-label { pointer-events: auto; cursor: pointer; transform: translateY(-14px); padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--text); background: rgba(8, 12, 24, 0.55); border: 1px solid var(--line); white-space: nowrap; transition: background .2s, border-color .2s, opacity .3s; user-select: none; }
+.p-label:hover, .p-label.hl { background: rgba(255, 138, 43, 0.18); border-color: var(--accent); }
+.labels-off .p-label { opacity: 0; pointer-events: none; }
+.a-label { pointer-events: none; transform: translate(14px, -50%); padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; background: rgba(8, 12, 24, 0.75); border: 1px solid var(--accent); color: var(--accent); white-space: nowrap; }
+
+/* Tìm kiếm */
+.search { position: relative; }
+.search-results { position: absolute; z-index: 5; left: 0; right: 0; top: 40px; display: none; flex-direction: column; padding: 4px; border-radius: 10px; background: var(--panel-solid); border: 1px solid var(--line-strong); box-shadow: var(--shadow); }
+.search-results.show { display: flex; }
+.search-results button { display: flex; justify-content: space-between; gap: 8px; text-align: left; border: 0; background: transparent; padding: 7px 10px; border-radius: 7px; cursor: pointer; font-size: 13px; }
+.search-results button:hover, .search-results button.on { background: rgba(255, 138, 43, 0.12); }
+.search-results .m { color: var(--muted); font-size: 11.5px; font-family: var(--mono); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip { padding: 4px 10px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line); background: var(--panel-raise); cursor: pointer; color: var(--muted); transition: all .2s; }
+.chip:hover { color: var(--text); border-color: var(--accent); }
+
+/* Bộ lọc nhóm */
+.cls { display: flex; align-items: center; gap: 10px; padding: 6px 8px; margin: 0 -8px; border-radius: 8px; cursor: pointer; user-select: none; font-size: 13px; transition: background .15s, opacity .2s; }
+.cls:hover { background: var(--panel-raise); }
+.cls.off { opacity: .4; }
+.cls .bar { flex: 1; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
+.cls .bar i { display: block; height: 100%; border-radius: 4px; }
+.cls .n { font-family: var(--mono); font-size: 11.5px; color: var(--muted); min-width: 52px; text-align: right; }
+.cls .name { width: 56px; }
+
+/* Thanh thời gian */
+.timebar { position: fixed; z-index: 30; left: 50%; bottom: calc(var(--footer-h) + 12px); transform: translateX(-50%); display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); backdrop-filter: blur(14px); }
+.tb-date { min-width: 150px; }
+.tb-date .mono { font-size: 18px; font-weight: 600; letter-spacing: .5px; }
+.tb-rate { font-size: 12px; color: var(--muted); }
+.tb-controls { display: flex; gap: 6px; }
+.tb-play { width: 42px; height: 42px; font-size: 16px; background: rgba(255, 138, 43, 0.14); border-color: var(--accent); }
+#tRate { width: 150px; }
+
+/* Chú giải khi rê chuột */
+.hover-tip { position: fixed; z-index: 50; pointer-events: none; padding: 8px 11px; border-radius: 10px; font-size: 12.5px; background: rgba(8, 12, 24, 0.94); border: 1px solid var(--line-strong); box-shadow: var(--shadow); opacity: 0; transition: opacity .12s; min-width: 170px; }
+.hover-tip.show { opacity: 1; }
+.hover-tip .h { font-weight: 650; display: flex; gap: 6px; align-items: center; }
+.hover-tip .m { color: var(--muted); font-family: var(--mono); font-size: 11.5px; margin-top: 2px; }
+
+/* Chi tiết */
+.d-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.d-actions .btn { width: 100%; }
+.d-desc { color: var(--muted); font-size: 13px; margin: 0 0 4px; }
+.prob { font-size: 22px; font-weight: 700; font-family: var(--mono); }
+.prob small { font-size: 12px; color: var(--muted); font-weight: 400; font-family: var(--font); }
+
+.fab { position: fixed; z-index: 35; left: 16px; bottom: 96px; }
+
+@media (max-width: 900px) {
+  .timebar { left: 16px; right: 16px; transform: none; gap: 8px; padding: 8px 10px; flex-wrap: wrap; justify-content: center; }
+  #tRate { flex: 1; width: auto; }
+  .tb-date { min-width: 0; }
+  .tb-date .mono { font-size: 15px; }
+  .panel-left { top: calc(var(--topbar-h) + 8px); bottom: auto; }
+  .panel-right { bottom: 120px; max-height: 45vh; }
+  .fab { bottom: 120px; }
+}

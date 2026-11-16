@@ -1,38 +1,126 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEOs</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        #gui-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10;
-
-            transform: scale(1.6);        /* scale everything inside */
-            transform-origin: top right;  /* keep top-right alignment */
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IMPACTOR · Quan sát NEO | CLB Thiên văn USAC</title>
+  <meta name="description" content="IMPACTOR – Asteroid Impact Simulation của CLB Thiên văn USAC: quan sát gần 40.000 thiên thể gần Trái Đất, kiến tạo kịch bản va chạm (Destroyer) và bảo vệ hành tinh (Defender) bằng vật lý thật." />
+  <meta name="theme-color" content="#040509" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="IMPACTOR · Asteroid Impact Simulation" />
+  <meta property="og:description" content="IMPACTOR – Asteroid Impact Simulation của CLB Thiên văn USAC: quan sát gần 40.000 thiên thể gần Trái Đất, kiến tạo kịch bản va chạm (Destroyer) và bảo vệ hành tinh (Defender) bằng vật lý thật." />
+  <meta property="og:image" content="https://astroimpactorlab.clbtvusac.com/og-logo.png" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="apple-touch-icon" href="./favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./src/styles/theme.css" />
+  <link rel="stylesheet" href="./src/styles/solar.css" />
 </head>
 <body>
-    <div class="nav-button">
-        <p>URL+/src for full</p>
-        <p>CHOOSE YOUR ROLE</p>
-        <button class="nav-btn" onclick="window.location.href='../test/globe.html'">💥Destroyer</button>
-        <button class="nav-btn" onclick="window.location.href='../Defense/earth.html'">🛡️Defender</button>
+  <div id="loader" class="loader">
+    <div class="loader-box">
+      <img class="loader-logo" src="./og-logo.png" alt="" width="72" height="72" />
+      <div class="loader-name">IMPACT<em>OR</em></div>
+      <div class="loader-sub">ASTEROID IMPACT SIMULATION</div>
+      <div class="loader-text" style="margin-top:0">Đang dựng Hệ Mặt Trời…</div>
+      <div class="loader-bar"><div></div></div>
+      <div class="loader-text">Tải dữ liệu quỹ đạo NEO (ESA)</div>
     </div>
-    <div id="gui-container"></div>
-    <div><script type="module" src="./script.js"></script></div>
-    <div id="planetInfo" class="planet-info">
-        <div class="planet-info-content">
-            <span class="close-btn" onclick="closeInfo()">&times;</span>
-            <h2 id="planetName"></h2>
-            <p id="planetDetails"></p>
-        </div>
-    </div>
+  </div>
 
+  <div id="scene"></div>
+
+  <!-- Bảng trái: tìm kiếm & bộ lọc -->
+  <aside class="panel panel-left" id="filterPanel">
+    <div class="panel-head">
+      <h2>Tiểu hành tinh gần Trái Đất<span class="sub" id="neoCount">—</span></h2>
+      <button class="btn icon-btn" data-collapse="filterPanel" title="Thu gọn">▴</button>
+    </div>
+    <div class="panel-body">
+      <div class="section">
+        <div class="search">
+          <input id="search" type="search" placeholder="Tìm: Apophis, Bennu, 2024 YR4…  ( / )" autocomplete="off" />
+          <div class="search-results" id="searchResults"></div>
+        </div>
+        <div class="chips" id="famous"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Nhóm quỹ đạo <span class="info" data-tip-title="Phân loại NEO" data-tip="Dựa vào bán trục lớn a, cận điểm q = a(1−e) và viễn điểm Q = a(1+e) so với quỹ đạo Trái Đất (1 AU). Rê chuột vào từng nhóm để xem tiêu chí."></span></div>
+        <div id="classFilters"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Bộ lọc</div>
+        <label class="switch" data-tip-title="Danh sách rủi ro ESA" data-tip="Các vật thể có xác suất va chạm khác 0 trong khoảng 100 năm tới, theo Trung tâm Điều phối NEO của ESA.">
+          <input type="checkbox" id="fRisk" /><span class="track"></span><span class="lbl">Chỉ vật thể trong danh sách rủi ro</span><span class="count" id="riskCount"></span>
+        </label>
+        <div class="field" style="margin-top:8px">
+          <div class="field-label">Đường kính tối thiểu <span class="val" id="fMinDOut">tất cả</span></div>
+          <input type="range" id="fMinD" min="0" max="5" step="1" value="0" />
+          <div class="field-hint">≥ 140 m là ngưỡng của "vật thể có khả năng gây nguy hiểm" (PHA).</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Hiển thị</div>
+        <div class="field">
+          <div class="field-label">Tô màu theo</div>
+          <div class="seg" id="colorMode">
+            <button data-v="class" class="on">Nhóm quỹ đạo</button>
+            <button data-v="size">Kích thước</button>
+            <button data-v="risk">Rủi ro</button>
+          </div>
+          <div class="legend" id="colorLegend" style="margin-top:8px"></div>
+        </div>
+        <label class="switch"><input type="checkbox" id="tOrbits" /><span class="track"></span><span class="lbl">Quỹ đạo các NEO đang lọc</span><span class="count">≤ 1.500</span></label>
+        <label class="switch"><input type="checkbox" id="tPlanetOrbits" checked /><span class="track"></span><span class="lbl">Quỹ đạo hành tinh</span></label>
+        <label class="switch"><input type="checkbox" id="tLabels" checked /><span class="track"></span><span class="lbl">Tên hành tinh</span></label>
+        <div class="field" style="margin-top:8px">
+          <div class="field-label">Phóng đại hành tinh <span class="info" data-tip-title="Vì sao phải phóng đại?" data-tip="Ở tỉ lệ thật (1 AU = 150 đơn vị), Trái Đất chỉ rộng 0,006 đơn vị — nhỏ hơn một điểm ảnh. Khoảng cách và quỹ đạo luôn đúng tỉ lệ; chỉ kích thước hành tinh được phóng to để dễ quan sát."></span><span class="val" id="pScaleOut">×1</span></div>
+          <input type="range" id="pScale" min="0.3" max="3" step="0.1" value="1" />
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="note">
+          <b>Dữ liệu:</b> 39.529 NEO từ ESA NEOCC (yếu tố Kepler hoàng đạo J2000). Hành tinh theo lịch JPL (Standish).
+          Vị trí tính bằng phương trình Kepler <span class="mono">M = E − e·sin E</span> theo thời gian mô phỏng.
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bảng phải: chi tiết vật thể -->
+  <aside class="panel panel-right hidden" id="detailPanel">
+    <div class="panel-head">
+      <span class="dot" id="dTitleDot"></span>
+      <h2 id="dTitle">—<span class="sub" id="dSub"></span></h2>
+      <button class="btn icon-btn" id="dClose" title="Đóng (Esc)">✕</button>
+    </div>
+    <div class="panel-body" id="dBody"></div>
+  </aside>
+
+  <!-- Thanh thời gian -->
+  <div class="timebar" id="timebar">
+    <div class="tb-date">
+      <div class="mono" id="simDate">—</div>
+      <div class="tb-rate" id="simRate">—</div>
+    </div>
+    <div class="tb-controls">
+      <button class="btn icon-btn" id="tSlower" title="Chậm hơn / lùi (←)">⏪</button>
+      <button class="btn icon-btn tb-play" id="tPlay" title="Phát / dừng (Space)">⏸</button>
+      <button class="btn icon-btn" id="tFaster" title="Nhanh hơn (→)">⏩</button>
+    </div>
+    <input type="range" id="tRate" min="0" max="11" step="1" value="8" title="Tốc độ thời gian" />
+    <button class="btn" id="tNow" title="Về thời điểm hiện tại">Hôm nay</button>
+  </div>
+
+  <div class="hover-tip" id="hoverTip"></div>
+  <button class="btn mobile-toggle fab" id="mFilters">☰ Bộ lọc</button>
+
+  <script type="module" src="./src/pages/solar.js"></script>
 </body>
 </html>

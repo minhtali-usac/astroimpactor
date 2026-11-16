@@ -1,21 +1,83 @@
-MIT License
+IMPACTOR – Asteroid Impact Simulation
+Bản quyền © 2026 CLB Thiên văn USAC (Trường Đại học Khoa học Tự nhiên – ĐHQG-HCM).
+Copyright © 2026 USAC Astronomy Club (University of Science, VNU-HCM).
+Giữ toàn bộ bản quyền. All rights reserved.
 
-Copyright (c) 2025 N3rson
+──────────────────────────────── TIẾNG VIỆT ────────────────────────────────
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+IMPACTOR do Nhóm Dự án Giáo dục Thiên văn và Khoa học Thực nghiệm, CLB Thiên văn
+USAC phát triển. Toàn bộ mã nguồn, nội dung (lời giới thiệu, hướng dẫn, lời giải
+thích, kịch bản, tài liệu), thiết kế giao diện, ảnh chụp màn hình, tên và logo CLB
+Thiên văn USAC thuộc quyền sở hữu của CLB Thiên văn USAC và được bảo hộ theo pháp
+luật về sở hữu trí tuệ, trừ các thành phần của bên thứ ba nêu dưới đây.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Việc mã nguồn được công khai trên GitHub chỉ nhằm mục đích tham khảo và minh bạch.
+Điều đó KHÔNG cấp cho bạn bất kỳ quyền nào để sao chép, chỉnh sửa, phân phối, xuất
+bản lại, cho thuê, bán hoặc tạo sản phẩm phái sinh từ IMPACTOR, toàn bộ hay một
+phần, khi chưa có sự đồng ý bằng văn bản của CLB Thiên văn USAC.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Bạn ĐƯỢC PHÉP, không cần xin phép:
+  1. Truy cập và sử dụng IMPACTOR tại https://astroimpactorlab.clbtvusac.com để học
+     tập, giảng dạy, kể cả trình chiếu trong lớp học hoặc hoạt động phi lợi nhuận.
+  2. Chia sẻ đường dẫn tới IMPACTOR.
+  3. Trích dẫn ngắn hoặc chụp màn hình để giới thiệu, nhận xét, nghiên cứu, kèm ghi
+     công «IMPACTOR – CLB Thiên văn USAC» và đường dẫn trên.
+
+Mọi mục đích khác (dùng lại mã nguồn, đưa nội dung vào tài liệu, sản phẩm hay nền
+tảng khác, sử dụng thương mại…) xin liên hệ qua email:
+minhvo.091003.nckh@gmail.com hoặc clb.usac@gmail.com.
+
+IMPACTOR phát triển tiếp từ dự án «AstroImpactor» thực hiện tại NASA Space Apps
+Challenge 2025, vốn được phát hành theo giấy phép MIT (© 2025 N3rson). Phần mã và
+tài nguyên kế thừa từ dự án đó vẫn tuân theo giấy phép MIT; toàn văn giấy phép MIT
+gốc được giữ nguyên trong THIRD-PARTY-NOTICES.md.
+
+Dữ liệu khoa học (yếu tố quỹ đạo, danh sách rủi ro, hằng số, công thức đã công bố…)
+là dữ kiện công khai thuộc các nguồn được trích dẫn. Thư viện, phông chữ, dữ liệu,
+kết cấu ảnh và mô hình 3D của bên thứ ba giữ nguyên giấy phép gốc, xem
+THIRD-PARTY-NOTICES.md; thông báo bản quyền này không áp dụng cho các thành phần đó.
+
+PHẦN MỀM ĐƯỢC CUNG CẤP “NGUYÊN TRẠNG”, KHÔNG KÈM BẤT KỲ BẢO ĐẢM NÀO. Kết quả mô
+phỏng mang tính giáo dục, không dùng cho mục đích dự báo hay ra quyết định thực tế.
+CLB THIÊN VĂN USAC KHÔNG CHỊU TRÁCH NHIỆM VỀ BẤT KỲ THIỆT HẠI NÀO PHÁT SINH TỪ VIỆC
+SỬ DỤNG.
+
+───────────────────────────────── ENGLISH ──────────────────────────────────
+
+IMPACTOR is developed by the Astronomy Education and Experimental Science Project
+Team, USAC Astronomy Club. All source code, content (introduction, guides,
+explanations, scenarios, documentation), interface design, screenshots, and the
+USAC Astronomy Club name and logo are the property of the USAC Astronomy Club and
+are protected by intellectual property law, except for the third-party components
+listed below.
+
+The source code is published on GitHub for reference and transparency only. This
+does NOT grant you any right to copy, modify, distribute, republish, sublicense,
+sell or create derivative works from IMPACTOR, in whole or in part, without the
+prior written permission of the USAC Astronomy Club.
+
+You MAY, without asking:
+  1. Access and use IMPACTOR at https://astroimpactorlab.clbtvusac.com for learning
+     and teaching, including classroom projection and non-profit activities.
+  2. Share links to IMPACTOR.
+  3. Quote briefly or take screenshots for introduction, review or research,
+     crediting "IMPACTOR – USAC Astronomy Club" with the link above.
+
+For any other use (reusing the code, including the content in other materials,
+products or platforms, commercial use, …) please contact:
+minhvo.091003.nckh@gmail.com or clb.usac@gmail.com.
+
+IMPACTOR continues the "AstroImpactor" project built at the NASA Space Apps
+Challenge 2025, which was released under the MIT License (© 2025 N3rson). Code and
+assets carried over from that project remain under the MIT License; its original
+license text is reproduced in THIRD-PARTY-NOTICES.md.
+
+Scientific data (orbital elements, risk lists, constants, published formulas, …)
+are public facts from the cited sources. Third-party libraries, fonts, data,
+textures and 3D models keep their original licenses, see THIRD-PARTY-NOTICES.md;
+this notice does not apply to them.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. Simulation results
+are for education only and must not be used for forecasting or real-world
+decisions. IN NO EVENT SHALL THE USAC ASTRONOMY CLUB BE LIABLE FOR ANY DAMAGES
+ARISING FROM ITS USE.

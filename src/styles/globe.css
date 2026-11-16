@@ -1,0 +1,51 @@
+/* Phần tử HTML gắn trên quả địa cầu (dùng chung cho trang va chạm & phòng thủ) */
+#globe { position: fixed; inset: 0; }
+#globe canvas { touch-action: none; }
+
+.g-arch { display: flex; align-items: center; gap: 7px; transform: translate(-6px, -50%); padding: 4px 10px 4px 6px; border-radius: 999px;
+  background: rgba(10, 14, 26, 0.82); border: 1px solid rgba(255, 210, 63, 0.75); box-shadow: 0 0 14px rgba(218, 37, 29, 0.35);
+  font-size: 11.5px; line-height: 1.15; white-space: nowrap; pointer-events: none; transition: opacity .25s; }
+.g-arch.hoangsa { transform: translate(-6px, -100%); }
+.g-arch.truongsa { transform: translate(-6px, 0); }
+.g-arch b { display: block; color: #ffe27a; font-weight: 650; }
+.g-arch small { display: block; color: #e9eefb; font-size: 10px; opacity: .85; }
+.g-arch .flag { position: relative; width: 18px; height: 12px; border-radius: 2px; background: #da251d; flex: none; }
+.g-arch .flag::after { content: '★'; position: absolute; inset: 0; display: grid; place-items: center; color: #ffcd00; font-size: 9px; line-height: 12px; }
+
+.g-city { transform: translate(-50%, -50%); font-size: 10.5px; font-weight: 600; color: rgba(255, 255, 255, 0.85); text-shadow: 0 1px 3px #000, 0 0 6px #000; white-space: nowrap; pointer-events: none; transition: opacity .25s; }
+.g-city::before { content: ''; display: inline-block; width: 4px; height: 4px; margin-right: 4px; border-radius: 50%; background: #fff; vertical-align: middle; }
+.g-city.vn { color: #ffe27a; }
+.g-city.vn::before { background: #ffd23f; }
+.g-city.hit { color: #ff8a8a; }
+.g-tip { padding: 4px 8px; border-radius: 6px; background: rgba(8, 12, 24, 0.9); font: 12px var(--font); }
+
+/* Ghim sự kiện lịch sử */
+.g-event { position: relative; transform: translate(-50%, -50%); pointer-events: auto; transition: opacity .25s; }
+.g-event .pin { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle, #fff 0 25%, #ff7a45 30% 60%, transparent 62%); box-shadow: 0 0 0 2px rgba(255, 122, 69, 0.35), 0 0 12px rgba(255, 122, 69, 0.8); cursor: pointer; animation: pulse 2.2s infinite; }
+.g-event .tag { position: absolute; left: 18px; top: -3px; font-size: 11px; font-weight: 600; white-space: nowrap; color: #ffc29e; text-shadow: 0 1px 3px #000; pointer-events: none; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(255, 122, 69, 0), 0 0 14px rgba(255, 122, 69, 0.9); } }
+
+/* Tâm ngắm vị trí va chạm */
+.g-target { transform: translate(-50%, -50%); width: 34px; height: 34px; pointer-events: none; }
+.g-target::before, .g-target::after { content: ''; position: absolute; inset: 0; border: 2px solid var(--danger); border-radius: 50%; }
+.g-target::after { inset: 13px; background: var(--danger); border: 0; }
+.g-target { animation: target-spin 4s linear infinite; }
+.g-target i { position: absolute; background: var(--danger); }
+.g-target i:nth-child(1) { left: 16px; top: -6px; width: 2px; height: 8px; } .g-target i:nth-child(2) { left: 16px; bottom: -6px; width: 2px; height: 8px; }
+.g-target i:nth-child(3) { top: 16px; left: -6px; height: 2px; width: 8px; } .g-target i:nth-child(4) { top: 16px; right: -6px; height: 2px; width: 8px; }
+@keyframes target-spin { to { rotate: 360deg; } }
+
+/* Nhãn vùng ảnh hưởng */
+.g-zone { transform: translate(-50%, -50%); padding: 1px 7px; border-radius: 6px; font-size: 10.5px; font-weight: 650; white-space: nowrap; background: rgba(8, 12, 24, 0.75); pointer-events: none; }
+
+/* Chớp sáng toàn màn hình khi va chạm */
+.flash { position: fixed; inset: 0; z-index: 20; pointer-events: none; background: radial-gradient(circle at var(--fx, 50%) var(--fy, 50%), rgba(255, 250, 230, 0.95), rgba(255, 170, 80, 0.5) 30%, transparent 70%); opacity: 0; }
+.flash.go { animation: flash 1.4s ease-out; }
+@keyframes flash { 0% { opacity: 0; } 8% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Nhìn từ xa: nhãn quần đảo thu gọn, ẩn thành phố */
+.globe-far .g-arch { padding: 2px 7px 2px 4px; font-size: 10px; gap: 4px; }
+.globe-far .g-arch small { display: none; }
+.globe-far .g-arch .flag { width: 12px; height: 8px; }
+.globe-far .g-arch .flag::after { font-size: 6px; line-height: 8px; }
+.globe-far .g-city:not(.vn) { opacity: 0 !important; }

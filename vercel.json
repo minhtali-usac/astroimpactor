@@ -1,10 +1,9 @@
 {
   "buildCommand": "vite build",
   "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/src/index.html", "destination": "/index.html" },
-    { "source": "/test/globe.html", "destination": "/globe.html" },
-    { "source": "/Defense/earth.html", "destination": "/earth.html" }
+  "redirects": [
+    { "source": "/src/index.html", "destination": "/", "permanent": true },
+    { "source": "/test/globe.html", "destination": "/impact.html", "permanent": true },
+    { "source": "/Defense/earth.html", "destination": "/defense.html", "permanent": true }
   ]
 }

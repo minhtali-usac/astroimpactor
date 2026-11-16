@@ -1,0 +1,43 @@
+#bplane { width: 100%; aspect-ratio: 1; border-radius: 12px; background: radial-gradient(circle, rgba(20, 30, 60, 0.6), rgba(5, 8, 16, 0.6)); border: 1px solid var(--line); margin-top: 10px; }
+
+.countdown { text-align: center; font-family: var(--mono); font-size: 40px; font-weight: 700; line-height: 1.1; background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.countdown small { font-size: 15px; margin-left: 6px; -webkit-text-fill-color: var(--muted); }
+.countdown.urgent { background: linear-gradient(90deg, #ff4d6d, #ffb347); -webkit-background-clip: text; background-clip: text; }
+
+.verdict { padding: 10px 12px; border-radius: 10px; font-weight: 600; font-size: 13.5px; margin-bottom: 10px; border: 1px solid; transition: all .3s; }
+.verdict.hit { color: #ff8095; border-color: rgba(255, 77, 109, 0.45); background: rgba(255, 77, 109, 0.1); }
+.verdict.miss { color: #6ff0b5; border-color: rgba(61, 220, 151, 0.45); background: rgba(61, 220, 151, 0.08); }
+.verdict.close { color: #ffd08a; border-color: rgba(255, 179, 71, 0.45); background: rgba(255, 179, 71, 0.08); }
+.verdict small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+.progress { position: relative; height: 10px; border-radius: 6px; background: rgba(255, 255, 255, 0.07); overflow: hidden; margin-bottom: 4px; }
+.progress > div { height: 100%; width: 0; background: linear-gradient(90deg, #ff4d6d, #ffb347 60%, #3ddc97); transition: width .25s; }
+.progress .mark { position: absolute; top: 0; bottom: 0; left: calc(100% / 1.15); width: 2px; background: #fff; opacity: .6; }
+
+.weapon { justify-content: space-between; height: 44px; }
+.weapon.firing { border-color: var(--accent); background: rgba(255, 138, 43, 0.18); box-shadow: 0 0 20px rgba(255, 138, 43, 0.35); }
+.rockets { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+.rockets span { width: 22px; height: 8px; border-radius: 4px; background: var(--accent); box-shadow: 0 0 8px rgba(255, 138, 43, 0.5); }
+.rockets span.used { background: rgba(255, 255, 255, 0.1); box-shadow: none; }
+.rockets span.flying { background: #ffb347; animation: blink .5s infinite; }
+@keyframes blink { 50% { opacity: .35; } }
+.heat { height: 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.07); overflow: hidden; margin-top: 6px; }
+.heat > div { height: 100%; width: 0; background: linear-gradient(90deg, #5ee7ff, #ffb347, #ff4d6d); background-size: 300px 100%; transition: width .1s; }
+
+.physics { font-size: 12.5px; color: var(--muted); }
+.physics .formula { margin: 4px 0 8px; }
+.physics b { color: var(--text); }
+
+.brief-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; padding: 3px 0; }
+.brief-row span:last-child { font-family: var(--mono); color: var(--text); }
+.feas { margin-top: 8px; padding: 9px 11px; border-radius: 10px; font-size: 12.5px; }
+.feas.ok { background: rgba(61, 220, 151, 0.08); border: 1px solid rgba(61, 220, 151, 0.35); color: #8ff5c6; }
+.feas.bad { background: rgba(255, 77, 109, 0.08); border: 1px solid rgba(255, 77, 109, 0.35); color: #ff9aac; }
+.feas.mid { background: rgba(255, 179, 71, 0.08); border: 1px solid rgba(255, 179, 71, 0.35); color: #ffd08a; }
+
+.ast-label { position: fixed; z-index: 10; pointer-events: none; display: flex; align-items: center; gap: 6px; transform: translate(14px, -50%); padding: 2px 9px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #ffd0b0; background: rgba(8, 12, 24, 0.75); border: 1px solid rgba(255, 138, 92, 0.6); white-space: nowrap; }
+.ast-label .dot { background: #ff8a5c; }
+
+.end-hero { font-size: 46px; text-align: center; margin-bottom: 6px; }
+.modal-card h3 { text-align: center; }
+.modal-card .lead { text-align: center; }

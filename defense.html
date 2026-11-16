@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IMPACTOR · Defender – Bảo vệ hành tinh | CLB Thiên văn USAC</title>
+  <meta name="description" content="IMPACTOR – Asteroid Impact Simulation của CLB Thiên văn USAC: quan sát gần 40.000 thiên thể gần Trái Đất, kiến tạo kịch bản va chạm (Destroyer) và bảo vệ hành tinh (Defender) bằng vật lý thật." />
+  <meta name="theme-color" content="#040509" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="IMPACTOR · Asteroid Impact Simulation" />
+  <meta property="og:description" content="IMPACTOR – Asteroid Impact Simulation của CLB Thiên văn USAC: quan sát gần 40.000 thiên thể gần Trái Đất, kiến tạo kịch bản va chạm (Destroyer) và bảo vệ hành tinh (Defender) bằng vật lý thật." />
+  <meta property="og:image" content="https://astroimpactorlab.clbtvusac.com/og-logo.png" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="apple-touch-icon" href="./favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./src/styles/theme.css" />
+  <link rel="stylesheet" href="./src/styles/globe.css" />
+  <link rel="stylesheet" href="./src/styles/defense.css" />
+</head>
+<body>
+  <div id="loader" class="loader">
+    <div class="loader-box">
+      <img class="loader-logo" src="./og-logo.png" alt="" width="72" height="72" />
+      <div class="loader-name">IMPACT<em>OR</em></div>
+      <div class="loader-sub">ASTEROID IMPACT SIMULATION</div>
+      <div class="loader-text" style="margin-top:0">Khởi động trung tâm phòng thủ…</div>
+      <div class="loader-bar"><div></div></div>
+      <div class="loader-text">Tải vệ tinh & tên lửa</div>
+    </div>
+  </div>
+
+  <div id="globe"></div>
+  <div class="flash" id="flash"></div>
+  <div class="ast-label hidden" id="astLabel"><span class="dot"></span><span id="astLabelText">Tiểu hành tinh</span></div>
+
+  <!-- Bảng trái: thiết lập nhiệm vụ / HUD -->
+  <aside class="panel panel-left" id="leftPanel">
+    <div class="panel-head">
+      <h2 id="leftTitle">Thiết lập nhiệm vụ<span class="sub" id="leftSub">Làm lệch hướng tiểu hành tinh trước khi quá muộn</span></h2>
+      <button class="btn icon-btn" data-collapse="leftPanel" title="Thu gọn">▴</button>
+    </div>
+    <div class="panel-body">
+      <!-- Thiết lập -->
+      <div id="setup">
+        <div class="section">
+          <div class="section-title">Độ khó</div>
+          <div class="seg" id="difficulty">
+            <button data-v="easy">Dễ</button>
+            <button data-v="normal" class="on">Vừa</button>
+            <button data-v="hard">Khó</button>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Tiểu hành tinh</div>
+          <div class="field">
+            <div class="field-label">Đường kính <span class="val" id="sDOut">150 m</span></div>
+            <input type="range" id="sD" min="20" max="1000" step="10" value="150" />
+          </div>
+          <div class="field">
+            <div class="field-label">Thành phần</div>
+            <select id="sComp"></select>
+          </div>
+          <div class="field">
+            <div class="field-label">Vận tốc tiếp cận v∞ <span class="info" data-tip-title="Vận tốc ở vô cực" data-tip="Vận tốc tương đối với Trái Đất trước khi bị lực hấp dẫn của Trái Đất kéo nhanh thêm. Vận tốc khi vào khí quyển: v = √(v∞² + 11,2²) km/s."></span><span class="val" id="sVOut">15 km/s</span></div>
+            <input type="range" id="sV" min="4" max="30" step="0.5" value="15" />
+          </div>
+          <div class="field">
+            <div class="field-label">Thời gian cảnh báo <span class="info" data-tip-title="Yếu tố quan trọng nhất" data-tip="Phát hiện càng sớm, cần lực đẩy càng nhỏ: độ dịch chuyển ≈ 3·Δv·t. Đẩy 1 cm/s trước 10 năm làm lệch ~9.500 km — gần bằng bán kính Trái Đất!"></span><span class="val" id="sTOut">1 năm</span></div>
+            <input type="range" id="sT" min="0" max="100" step="1" value="60" />
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Phương tiện phòng thủ</div>
+          <div class="field">
+            <div class="field-label">Tàu va chạm (kiểu DART) <span class="val" id="sNOut">4 tàu</span></div>
+            <input type="range" id="sN" min="0" max="8" step="1" value="4" />
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <div class="field-label">Khối lượng <span class="val" id="sMOut">1.500 kg</span></div>
+              <input type="range" id="sM" min="300" max="10000" step="100" value="1500" />
+            </div>
+            <div class="field">
+              <div class="field-label">Vận tốc va <span class="val" id="sUOut">10 km/s</span></div>
+              <input type="range" id="sU" min="3" max="20" step="0.5" value="10" />
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Hệ số khuếch đại động lượng β <span class="info" data-tip-title="β (beta)" data-tip="Vật chất bắn ra từ hố va chạm tạo thêm lực đẩy. Thí nghiệm DART (2022) đo được β ≈ 3,6 trên Dimorphos."></span><span class="val" id="sBOut">3,0</span></div>
+            <input type="range" id="sB" min="1" max="5" step="0.1" value="3" />
+          </div>
+          <div class="field">
+            <div class="field-label">Laser vệ tinh <span class="info" data-tip-title="Bóc tách bằng laser" data-tip="Laser nung bốc hơi bề mặt, luồng hơi phụt ra tạo lực đẩy F = Cₘ·P với Cₘ ≈ 100 µN/W (1 MW ⇒ 100 N). Chùm tia loe ra theo khoảng cách nên chỉ hiệu quả khi tiểu hành tinh ở gần hơn ~10 triệu km. Laser nóng lên khi bắn liên tục và cần nghỉ để làm mát."></span><span class="val" id="sPOut">50 MW</span></div>
+            <input type="range" id="sP" min="0" max="200" step="5" value="50" />
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Phân tích trước nhiệm vụ</div>
+          <div id="briefing"></div>
+        </div>
+        <div class="section">
+          <button class="btn btn-primary btn-lg btn-block" id="start">🚀 Bắt đầu nhiệm vụ</button>
+          <div class="field-hint" style="text-align:center;margin-top:8px">Phím tắt: <span class="kbd">R</span> phóng tàu · giữ <span class="kbd">Space</span> bắn laser · <span class="kbd">P</span> tạm dừng</div>
+        </div>
+      </div>
+
+      <!-- HUD khi đang chơi -->
+      <div id="hud" class="hidden">
+        <div class="section">
+          <div class="countdown"><span id="hDays">—</span><small id="hDaysUnit">ngày</small></div>
+          <div class="muted" style="text-align:center;font-size:12.5px">trước thời điểm tiếp cận Trái Đất</div>
+          <div class="stat-grid" style="margin-top:10px">
+            <div class="stat"><div class="k">Khoảng cách (ước tính)</div><div class="v" id="hDist">—</div></div>
+            <div class="stat"><div class="k">Δv đã tác dụng</div><div class="v" id="hDv">0</div></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Dự báo tiếp cận gần nhất</div>
+          <div class="verdict" id="hVerdict">—</div>
+          <div class="progress"><div id="hProg"></div><span class="mark"></span></div>
+          <div class="row" style="font-size:11.5px;color:var(--muted)"><span>tâm Trái Đất</span><span style="text-align:right">an toàn ≥ <span id="hSafe">—</span></span></div>
+        </div>
+        <div class="section">
+          <div class="section-title">Vũ khí</div>
+          <button class="btn btn-block weapon" id="fireRocket"><span>🚀 Phóng tàu va chạm</span><span class="kbd">R</span></button>
+          <div class="rockets" id="hRockets"></div>
+          <button class="btn btn-block weapon" id="fireLaser" style="margin-top:10px"><span>🔆 Bắn laser (giữ)</span><span class="kbd">Space</span></button>
+          <div class="heat"><div id="hHeat"></div></div>
+          <div class="field-hint" id="hLaserState">Sẵn sàng</div>
+        </div>
+        <div class="section">
+          <div class="row">
+            <div class="seg" id="speed"><button data-v="0.5">×½</button><button data-v="1" class="on">×1</button><button data-v="2">×2</button><button data-v="4">×4</button></div>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn" id="pause">⏸ Tạm dừng</button>
+            <button class="btn" id="abort">✕ Huỷ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bảng phải: mặt phẳng B -->
+  <aside class="panel panel-right" id="rightPanel">
+    <div class="panel-head">
+      <h2>Mặt phẳng B<span class="sub">Nhìn dọc theo hướng bay của tiểu hành tinh</span></h2>
+      <button class="btn icon-btn" data-collapse="rightPanel" title="Thu gọn">▴</button>
+    </div>
+    <div class="panel-body">
+      <canvas id="bplane" width="640" height="640"></canvas>
+      <div class="legend" style="margin-top:8px">
+        <div class="legend-item"><span class="dot" style="background:#2f7bff"></span>Trái Đất (bán kính thật)</div>
+        <div class="legend-item"><span class="dot" style="background:transparent;border:2px dashed #ff4d6d"></span>Vùng bắt giữ — hấp dẫn kéo vào va chạm</div>
+        <div class="legend-item"><span class="dot" style="background:#ffd23f"></span>Điểm xuyên qua dự kiến của tiểu hành tinh</div>
+      </div>
+      <div class="section">
+        <div class="section-title">Vật lý đang diễn ra</div>
+        <div id="physics" class="physics"></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="modal" id="endModal">
+    <div class="modal-card" id="endCard"></div>
+  </div>
+
+  <script type="module" src="./src/pages/defense.js"></script>
+</body>
+</html>
